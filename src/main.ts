@@ -328,4 +328,4 @@ const Crypto = {
   }
 }
 
-exports.crypto = Crypto
+export default Crypto
