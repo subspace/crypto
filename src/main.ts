@@ -328,4 +328,4 @@ const Crypto = {
   }
 }
 
-module.exports = Crypto
+exports.crypto = Crypto
