@@ -210,5 +210,5 @@ const Crypto = {
         return decryptedText;
     })
 };
-exports.default = Crypto;
+moudle.exports = Crypto;
 //# sourceMappingURL=main.js.map
