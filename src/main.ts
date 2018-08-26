@@ -328,4 +328,4 @@ const Crypto = {
   }
 }
 
-export default Crypto
+module.exports = Crypto
