@@ -234,11 +234,14 @@ const Crypto = {
     }    
   },
   createFailureProof: async (peerId: string, profile: any) => {
-    // TODO
-    // implements the parsec consensus protocol
-    // probably as a separate module 
+    // PBFT 2/3 vote for now
+    // will implement the parsec consensus protocol as a separate module later
     try {
-
+      // called from a higher module on a disconnect event, if the node is still in the LHT
+      // vote that the node has failed
+      // check routing table for a list of all neighbors
+      // send vote to all neighbors
+      // maintain a tally in members and decide once all votes have been cast
     } 
 
     catch (error) {
@@ -247,9 +250,11 @@ const Crypto = {
     }
   },
   verifyFailureProof: async (data: any[], publicKey: string) => {
-    // TODO
-    // validates the parsec consensus protocol
+    // PBFT 2/3 vote for now
+    // will implement the parsec consensus protocol as a separate module later
     try {
+      // called when a failure message is received
+      // validates the message and updates the tally in members
 
     } 
 
@@ -325,6 +330,12 @@ const Crypto = {
       console.log('Error decrypting with symmetric key')
       console.log(error)
     }
+  },
+  getXorDistance: (a: [number], b: [number]) => {
+    if (a.length !== b.length) throw new Error('Inputs should have the same length')
+    var result: any = new Buffer(a.length)
+    for (var i: number = 0; i < a.length; i++) result[i] = a[i] ^ b[i]
+    return result
   }
 }
 
