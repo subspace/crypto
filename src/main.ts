@@ -67,8 +67,7 @@ const Crypto = {
   getPrivateKeyObject: async (privateKey: string) => {
     // extracts the private key object for signature and encryption
     try {
-      const privateKeyObject: any = openpgp.key.readArmored(privateKey).keys[0]
-      await privateKeyObject.decrypt('passphrase')
+      const privateKeyObject: any = (await openpgp.key.readArmored(privateKey)).keys[0]
       return privateKeyObject
     } 
 

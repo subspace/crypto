@@ -78,8 +78,7 @@ const Crypto = {
     getPrivateKeyObject: (privateKey) => __awaiter(this, void 0, void 0, function* () {
         // extracts the private key object for signature and encryption
         try {
-            const privateKeyObject = openpgp.key.readArmored(privateKey).keys[0];
-            yield privateKeyObject.decrypt('passphrase');
+            const privateKeyObject = (yield openpgp.key.readArmored(privateKey)).keys[0];
             return privateKeyObject;
         }
         catch (error) {
