@@ -1,4 +1,4 @@
-import crypto from "./main"
+import * as crypto from "./main"
 
 const value: string = 'hello subspace'
 const falseValue: string = 'herro rubrace'
