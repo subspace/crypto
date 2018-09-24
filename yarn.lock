@@ -30,6 +30,10 @@
   version "10.9.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.9.2.tgz#f0ab8dced5cd6c56b26765e1c0d9e4fdcc9f2a00"
 
+"@types/openpgp@^0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@types/openpgp/-/openpgp-0.0.30.tgz#3c4d907a5b8b1ad94943268f8f31b970cfcf409d"
+
 "@types/whatwg-streams@0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@types/whatwg-streams/-/whatwg-streams-0.0.5.tgz#66c3852b8e33f2a2ca225a6d8fd8096e34d17fe6"
