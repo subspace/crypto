@@ -7,13 +7,13 @@ A utility library for cryptographic functions
 Install this module as a dependency into another project
 
 ```
-$ yarn add 'github:subspace/profile.git'
+$ yarn add 'github:subspace/profile'
 ```
 
 Require this module inside a script
 
 ```typescript
-import * as crypto from 'subspace-crypto'
+import * as crypto from '@subspace/crypto'
 
 let hash: string = crypto.getHash('abc')
 

@@ -4,7 +4,7 @@ const value: string = 'hello subspace'
 const falseValue: string = 'herro rubrace'
 const hash: string = '00ba5188adff22ee1f8abc61d6e96c371f0d505ec76f90e86d4b0c8748d646bb'
 const generateKeys = async () => {
-  const options: object = {
+  const options: crypto.optionsObject = {
     userIds: [{ 
       name: 'me',
       email: 'me@me.com' 
