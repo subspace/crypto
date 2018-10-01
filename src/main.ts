@@ -1,4 +1,5 @@
 import crypto from 'crypto'
+import * as interfaces from './interfaces'
 const openpgp = require('openpgp')
 const aesjs = require('aes-js')
 
@@ -12,60 +13,6 @@ const aesjs = require('aes-js')
   // replace AES-JS with native crypto or openpgp symmetric encryption
   // implement parsec consensus for node failures
   // use SSCL block hashes in place of time stamps 
-
-interface Userid {
-  name: string,
-  email: string
-}
-
-export interface optionsObject {
-  userIds: Userid[],
-  curve: string,
-  passphrase: string
-}  
-
-interface signatureOptions {
-  message: string,
-  privateKeys: any[],
-  detached: boolean
-}
-
-interface signatureValue {
-  signature: string
-}
-
-interface verifySignatureOptions {
-  message: string,
-  signature: string,
-  publicKeys: string[]
-}
-
-interface validityValue {
-  isValid: boolean,
-  reply: {
-    type: string,
-    data: string
-  }
-}
-
-interface encryptionOptions {
-  data: string,
-  publicKeys: string
-}
-
-interface encryptedValueObject {
-  data: string,
-  signature: string
-}
-
-interface decryptionOptions {
-  message: string,
-  privateKeys: any[]
-}
-
-interface decrpytedValueObject {
-  data: string
-}
 
 export function getHash(value: string) {
   // returns the sha256 hash of a string value
@@ -110,7 +57,7 @@ export function verifyDate(date: number, range: number) {
   return valid
 }
 
-export async function generateKeys(options: optionsObject) {
+export async function generateKeys(options: interfaces.optionsObject) {
   // generate an ECDSA key pair with openpgp
   try {
     const keys: openpgp.KeyContainer = await openpgp.generateKey(options)
@@ -144,13 +91,13 @@ export async function sign(value: string | object | any[], privateKeyObject: any
   try {
     const data: string = stringify(value)
 
-    const options: signatureOptions = {
+    const options: interfaces.signatureOptions = {
       message: openpgp.cleartext.fromText(value),
       privateKeys: [privateKeyObject],
       detached: true
     }
 
-    const signed: signatureValue = await openpgp.sign(options)
+    const signed: interfaces.signatureValue = await openpgp.sign(options)
     const signature: string = signed.signature
     return signature
   } 
@@ -170,7 +117,7 @@ export async function verifySignature(value: string | object | any[], signature:
   try {
     const message = stringify(value)
 
-    const options: verifySignatureOptions  = {
+    const options: interfaces.verifySignatureOptions  = {
       message: openpgp.message.fromText(message),
       signature: openpgp.signature.readArmored(signature),
       publicKeys: openpgp.key.readArmored(publicKey).keys
@@ -211,7 +158,7 @@ export async function createJoinProof(profile: any) {
 export async function verifyJoinProof(data: any[]) {
   // verifies a join proof received from another node or when validating a LHT received over sync()
   try {
-    const validity: validityValue = {
+    const validity: interfaces.validityValue = {
       isValid: true,
       reply: {
         type: null,
@@ -274,7 +221,7 @@ export async function createLeaveProof(profile: any) {
 export async function verifyLeaveProof(data: any[], publicKey: string) {
   // verifies a leave proof received from another node or when validating an LHT received over sync 
   try {
-    const validity: validityValue = {
+    const validity: interfaces.validityValue = {
       isValid: true,
       reply: {
         type: null,
@@ -343,12 +290,12 @@ export async function verifyFailureProof(data: any[], publicKey: string) {
 export async function encryptAssymetric(value: string, publicKey: string) {
   // encrypt a symmetric key with a private key
   try {
-    const options: encryptionOptions = {
+    const options: interfaces.encryptionOptions = {
       data: value,
       publicKeys: openpgp.key.readArmored(publicKey).keys
     }
 
-    const cipherText: encryptedValueObject = await openpgp.encrypt(options)
+    const cipherText: interfaces.encryptedValueObject = await openpgp.encrypt(options)
     const encryptedValue: string = cipherText.data
     return encryptedValue
   } 
@@ -362,12 +309,12 @@ export async function encryptAssymetric(value: string, publicKey: string) {
 export async function decryptAssymetric(value: string, privateKeyObject: object) {
   // decrypt a symmetric key with a private key
   try {
-    const options: decryptionOptions = {
+    const options: interfaces.decryptionOptions = {
       message: openpgp.message.readArmored(value),
       privateKeys: [privateKeyObject]
     }
 
-    const plainText: decrpytedValueObject = await openpgp.decrypt(options)
+    const plainText: interfaces.decrpytedValueObject = await openpgp.decrypt(options)
     const decryptedValue: string = plainText.data
     return decryptedValue
   } 
@@ -412,13 +359,6 @@ export async function decryptSymmetric(encryptedValue: string, symkey: string) {
     console.log('Error decrypting with symmetric key')
     console.log(error)
   }
-}
-
-export async function getXorDistance(a: [number], b: [number]) {
-  if (a.length !== b.length) throw new Error('Inputs should have the same length')
-  var result: any = new Buffer(a.length)
-  for (let i = 0; i < a.length; i++) result[i] = a[i] ^ b[i]
-  return result
 }
 
 
