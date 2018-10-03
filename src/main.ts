@@ -67,6 +67,7 @@ export async function generateKeys(options: interfaces.optionsObject) {
   catch(error) {
     console.log('Error generating keys')
     console.log(error)
+    return(error)
   }
 }
 
@@ -81,6 +82,7 @@ export async function getPrivateKeyObject(privateKey: string) {
   catch (error) {
     console.log('Error getting private key object')
     console.log(error)
+    return(error)
   }
 }
 
@@ -105,6 +107,7 @@ export async function sign(value: string | object | any[], privateKeyObject: any
   catch (error) {
     console.log('Error generating signature')
     console.log(error)
+    return(error)
   }
 }
 
@@ -134,6 +137,7 @@ export async function isValidSignature(value: string | object | any[], signature
   catch (error) {
     console.log('Error verifying signature')
     console.log(error)
+    return(error)
   }
 }
 
@@ -155,6 +159,7 @@ export async function createJoinProof(profile: any) {
   catch (error) {
     console.log('Error creating join proof')
     console.log(error)
+    return(error)
   }
 }
 
@@ -199,6 +204,7 @@ export async function isValidJoinProof(data: any[]) {
   catch (error) {
     console.log('Error verifying join proof')
     console.log(error)
+    return(error)
   }
 }
 
@@ -218,6 +224,7 @@ export async function createLeaveProof(profile: any) {
   catch (error) {
     console.log('Error generating a leave proof')
     console.log(error)
+    return(error)
   }
 }
 
@@ -255,6 +262,7 @@ export async function isValidLeaveProof(data: any[], publicKey: string) {
   catch (error) {
     console.log('Error verifying leave proof')
     console.log(error)
+    return(error)
   }    
 }
 
@@ -272,6 +280,7 @@ export async function createFailureProof(peerId: string, profile: any) {
   catch (error) {
     console.log('Error generating failure proof')
     console.log(error)
+    return(error)
   }
 }
 
@@ -287,6 +296,7 @@ export async function isValidFailureProof(data: any[], publicKey: string) {
   catch (error) {
     console.log('Error validating failure proof')
     console.log(error)
+    return(error)
   }
 }
 
@@ -306,6 +316,7 @@ export async function encryptAssymetric(value: string, publicKey: string) {
   catch (error) {
     console.log('Error encrypting symmetric key with private key')
     console.log(error)
+    return(error)
   }
 }
 
@@ -325,6 +336,7 @@ export async function decryptAssymetric(value: string, privateKeyObject: object)
   catch (error) {
     console.log('Error decrypting symmetric key with private key')
     console.log(error)
+    return(error)
   }
 }
 
@@ -343,6 +355,7 @@ export async function encryptSymmetric(value: string, symkey: string) {
   catch (error) {
     console.log('Error encrypting record value with symmetric key')
     console.log(error)
+    return(error)
   }
 }
 
@@ -361,6 +374,7 @@ export async function decryptSymmetric(encryptedValue: string, symkey: string) {
   catch (error) {
     console.log('Error decrypting with symmetric key')
     console.log(error)
+    return(error)
   }
 }
 
