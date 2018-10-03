@@ -22,7 +22,7 @@ export function getHash(value: string) {
   return hash
 }
 
-export function verifyHash(hash: string, value: string) {
+export function isValidHash(hash: string, value: string) {
   // checks to ensure a supplied hash matches a value
   const valid: boolean = hash === getHash(value)
   return valid 
@@ -51,7 +51,7 @@ export function stringify(value: string | object | any[]) {
   return value
 }
 
-export function verifyDate(date: number, range: number) {
+export function isDateWithinRange(date: number, range: number) {
   // checks to ensure a supplied unix timestamp is within a supplied range
   const valid: boolean = Math.abs(Date.now() - date) <= range
   return valid
@@ -108,12 +108,15 @@ export async function sign(value: string | object | any[], privateKeyObject: any
   }
 }
 
-export async function verifySignature(value: string | object | any[], signature: string, publicKey: string) {
+export async function isValidSignature(value: string | object | any[], signature: string, publicKey: string) {
 
   // verifies a detached signature on a message given a public key for
     // RPC message signatures
     // Join, Leave, and Failure proofs (LHT entries)
     // SSDB record signatures 
+
+  
+  
   try {
     const message = stringify(value)
 
@@ -155,7 +158,7 @@ export async function createJoinProof(profile: any) {
   }
 }
 
-export async function verifyJoinProof(data: any[]) {
+export async function isValidJoinProof(data: any[]) {
   // verifies a join proof received from another node or when validating a LHT received over sync()
   try {
     const validity: interfaces.validityValue = {
@@ -172,19 +175,19 @@ export async function verifyJoinProof(data: any[]) {
     const signature: string = data[3]
     const message: any[] = data.slice(0,3)
 
-    if(!verifyHash(hexId, publicKey)) {
+    if(!isValidHash(hexId, publicKey)) {
       validity.isValid = false
       validity.reply.type = 'join error'
       validity.reply.data = '--- Invalid Hash ---'
     }
 
-    if(!verifyDate(timeStamp, 600000)) {
+    if(!isDateWithinRange(timeStamp, 600000)) {
       validity.isValid = false
       validity.reply.type = 'join error'
       validity.reply.data = '--- Invalid Timestamp ---'
     }
 
-    if(!await verifySignature(message, signature, publicKey)) {
+    if(!await isValidSignature(message, signature, publicKey)) {
       validity.isValid = false
       validity.reply.type = 'join error'
       validity.reply.data = '--- Invalid Signature ---'
@@ -218,7 +221,7 @@ export async function createLeaveProof(profile: any) {
   }
 }
 
-export async function verifyLeaveProof(data: any[], publicKey: string) {
+export async function isValidLeaveProof(data: any[], publicKey: string) {
   // verifies a leave proof received from another node or when validating an LHT received over sync 
   try {
     const validity: interfaces.validityValue = {
@@ -234,13 +237,13 @@ export async function verifyLeaveProof(data: any[], publicKey: string) {
     const signature: string = data[2]
     const message: any = data.slice(0,2)
 
-    if(!verifyDate(timeStamp, 600000)) {
+    if(!isDateWithinRange(timeStamp, 600000)) {
       validity.isValid = false
       validity.reply.type = 'leave error'
       validity.reply.data = '--- Invalid Timestamp ---'
     }
 
-    if (!verifySignature(message, signature, publicKey)) {
+    if (!isValidSignature(message, signature, publicKey)) {
       validity.isValid = false
       validity.reply.type = 'leave error'
       validity.reply.data = '--- Invalid Signature ---'
@@ -272,7 +275,7 @@ export async function createFailureProof(peerId: string, profile: any) {
   }
 }
 
-export async function verifyFailureProof(data: any[], publicKey: string) {
+export async function isValidFailureProof(data: any[], publicKey: string) {
   // PBFT 2/3 vote for now
   // will implement the parsec consensus protocol as a separate module later
   try {
