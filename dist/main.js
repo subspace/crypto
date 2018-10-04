@@ -24,12 +24,12 @@ function getHash(value) {
     return hash;
 }
 exports.getHash = getHash;
-function verifyHash(hash, value) {
+function isValidHash(hash, value) {
     // checks to ensure a supplied hash matches a value
     const valid = hash === getHash(value);
     return valid;
 }
-exports.verifyHash = verifyHash;
+exports.isValidHash = isValidHash;
 function getRandom() {
     // generates a random 32 byte symmetric password
     const randomBytes = crypto_1.default.randomBytes(32);
@@ -55,12 +55,12 @@ function stringify(value) {
     return value;
 }
 exports.stringify = stringify;
-function verifyDate(date, range) {
+function isDateWithinRange(date, range) {
     // checks to ensure a supplied unix timestamp is within a supplied range
     const valid = Math.abs(Date.now() - date) <= range;
     return valid;
 }
-exports.verifyDate = verifyDate;
+exports.isDateWithinRange = isDateWithinRange;
 async function generateKeys(options) {
     // generate an ECDSA key pair with openpgp
     try {
@@ -70,6 +70,7 @@ async function generateKeys(options) {
     catch (error) {
         console.log('Error generating keys');
         console.log(error);
+        return (error);
     }
 }
 exports.generateKeys = generateKeys;
@@ -83,6 +84,7 @@ async function getPrivateKeyObject(privateKey) {
     catch (error) {
         console.log('Error getting private key object');
         console.log(error);
+        return (error);
     }
 }
 exports.getPrivateKeyObject = getPrivateKeyObject;
@@ -103,10 +105,11 @@ async function sign(value, privateKeyObject) {
     catch (error) {
         console.log('Error generating signature');
         console.log(error);
+        return (error);
     }
 }
 exports.sign = sign;
-async function verifySignature(value, signature, publicKey) {
+async function isValidSignature(value, signature, publicKey) {
     // verifies a detached signature on a message given a public key for
     // RPC message signatures
     // Join, Leave, and Failure proofs (LHT entries)
@@ -125,9 +128,10 @@ async function verifySignature(value, signature, publicKey) {
     catch (error) {
         console.log('Error verifying signature');
         console.log(error);
+        return (error);
     }
 }
-exports.verifySignature = verifySignature;
+exports.isValidSignature = isValidSignature;
 async function createJoinProof(profile) {
     // how would you import the profile interface from @subspace/profile?
     // creates a signed proof from a host node, showing they have joined the LHT 
@@ -144,10 +148,11 @@ async function createJoinProof(profile) {
     catch (error) {
         console.log('Error creating join proof');
         console.log(error);
+        return (error);
     }
 }
 exports.createJoinProof = createJoinProof;
-async function verifyJoinProof(data) {
+async function isValidJoinProof(data) {
     // verifies a join proof received from another node or when validating a LHT received over sync()
     try {
         const validity = {
@@ -162,17 +167,17 @@ async function verifyJoinProof(data) {
         const timeStamp = data[2];
         const signature = data[3];
         const message = data.slice(0, 3);
-        if (!verifyHash(hexId, publicKey)) {
+        if (!isValidHash(hexId, publicKey)) {
             validity.isValid = false;
             validity.reply.type = 'join error';
             validity.reply.data = '--- Invalid Hash ---';
         }
-        if (!verifyDate(timeStamp, 600000)) {
+        if (!isDateWithinRange(timeStamp, 600000)) {
             validity.isValid = false;
             validity.reply.type = 'join error';
             validity.reply.data = '--- Invalid Timestamp ---';
         }
-        if (!await verifySignature(message, signature, publicKey)) {
+        if (!await isValidSignature(message, signature, publicKey)) {
             validity.isValid = false;
             validity.reply.type = 'join error';
             validity.reply.data = '--- Invalid Signature ---';
@@ -182,9 +187,10 @@ async function verifyJoinProof(data) {
     catch (error) {
         console.log('Error verifying join proof');
         console.log(error);
+        return (error);
     }
 }
-exports.verifyJoinProof = verifyJoinProof;
+exports.isValidJoinProof = isValidJoinProof;
 async function createLeaveProof(profile) {
     // allows a peer to announce they have left the network as part of a graceful shutdown
     try {
@@ -199,10 +205,11 @@ async function createLeaveProof(profile) {
     catch (error) {
         console.log('Error generating a leave proof');
         console.log(error);
+        return (error);
     }
 }
 exports.createLeaveProof = createLeaveProof;
-async function verifyLeaveProof(data, publicKey) {
+async function isValidLeaveProof(data, publicKey) {
     // verifies a leave proof received from another node or when validating an LHT received over sync 
     try {
         const validity = {
@@ -216,12 +223,12 @@ async function verifyLeaveProof(data, publicKey) {
         const timeStamp = data[1];
         const signature = data[2];
         const message = data.slice(0, 2);
-        if (!verifyDate(timeStamp, 600000)) {
+        if (!isDateWithinRange(timeStamp, 600000)) {
             validity.isValid = false;
             validity.reply.type = 'leave error';
             validity.reply.data = '--- Invalid Timestamp ---';
         }
-        if (!verifySignature(message, signature, publicKey)) {
+        if (!isValidSignature(message, signature, publicKey)) {
             validity.isValid = false;
             validity.reply.type = 'leave error';
             validity.reply.data = '--- Invalid Signature ---';
@@ -231,9 +238,10 @@ async function verifyLeaveProof(data, publicKey) {
     catch (error) {
         console.log('Error verifying leave proof');
         console.log(error);
+        return (error);
     }
 }
-exports.verifyLeaveProof = verifyLeaveProof;
+exports.isValidLeaveProof = isValidLeaveProof;
 async function createFailureProof(peerId, profile) {
     // PBFT 2/3 vote for now
     // will implement the parsec consensus protocol as a separate module later
@@ -247,10 +255,11 @@ async function createFailureProof(peerId, profile) {
     catch (error) {
         console.log('Error generating failure proof');
         console.log(error);
+        return (error);
     }
 }
 exports.createFailureProof = createFailureProof;
-async function verifyFailureProof(data, publicKey) {
+async function isValidFailureProof(data, publicKey) {
     // PBFT 2/3 vote for now
     // will implement the parsec consensus protocol as a separate module later
     try {
@@ -260,9 +269,10 @@ async function verifyFailureProof(data, publicKey) {
     catch (error) {
         console.log('Error validating failure proof');
         console.log(error);
+        return (error);
     }
 }
-exports.verifyFailureProof = verifyFailureProof;
+exports.isValidFailureProof = isValidFailureProof;
 async function encryptAssymetric(value, publicKey) {
     // encrypt a symmetric key with a private key
     try {
@@ -277,6 +287,7 @@ async function encryptAssymetric(value, publicKey) {
     catch (error) {
         console.log('Error encrypting symmetric key with private key');
         console.log(error);
+        return (error);
     }
 }
 exports.encryptAssymetric = encryptAssymetric;
@@ -294,6 +305,7 @@ async function decryptAssymetric(value, privateKeyObject) {
     catch (error) {
         console.log('Error decrypting symmetric key with private key');
         console.log(error);
+        return (error);
     }
 }
 exports.decryptAssymetric = decryptAssymetric;
@@ -311,6 +323,7 @@ async function encryptSymmetric(value, symkey) {
     catch (error) {
         console.log('Error encrypting record value with symmetric key');
         console.log(error);
+        return (error);
     }
 }
 exports.encryptSymmetric = encryptSymmetric;
@@ -328,6 +341,7 @@ async function decryptSymmetric(encryptedValue, symkey) {
     catch (error) {
         console.log('Error decrypting with symmetric key');
         console.log(error);
+        return (error);
     }
 }
 exports.decryptSymmetric = decryptSymmetric;

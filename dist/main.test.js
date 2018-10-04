@@ -43,8 +43,8 @@ test('read', () => {
     expect(crypto.read(buffer)).toBe(readable);
 });
 test('verifyHash', () => {
-    expect(crypto.verifyHash(hash, value)).toBe(true);
-    expect(crypto.verifyHash(hash, falseValue)).toBe(false);
+    expect(crypto.isValidHash(hash, value)).toBe(true);
+    expect(crypto.isValidHash(hash, falseValue)).toBe(false);
 });
 test('stringify', () => {
     const stringInput = 'test';
@@ -64,13 +64,13 @@ test('verifyDate', () => {
     const range = 600000;
     const testDate = Date.now();
     const validEarly = testDate - 599000;
-    expect(crypto.verifyDate(validEarly, range)).toBe(true);
+    expect(crypto.isDateWithinRange(validEarly, range)).toBe(true);
     const validLate = testDate + 599000;
-    expect(crypto.verifyDate(validLate, range)).toBe(true);
+    expect(crypto.isDateWithinRange(validLate, range)).toBe(true);
     const invalidEarly = testDate - 601000;
-    expect(crypto.verifyDate(invalidEarly, range)).toBe(false);
+    expect(crypto.isDateWithinRange(invalidEarly, range)).toBe(false);
     const invalidLate = testDate + 601000;
-    expect(crypto.verifyDate(invalidLate, range)).toBe(false);
+    expect(crypto.isDateWithinRange(invalidLate, range)).toBe(false);
 });
 // test('generateKeys',() => {
 // })
