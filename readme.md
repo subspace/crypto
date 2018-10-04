@@ -33,7 +33,7 @@ Computes the sha256 hash of a string value.
 
 Returns *hash*, a 32 byte hash as a hex encoded string.
 
-### crypto.verifyHash(hash: string, value: string) : valid: boolean
+### crypto.isValidHash(hash: string, value: string) : valid: boolean
 Validates a given hash matches a string value.
 
 * `value` - any string value, typically stringified JSON
@@ -60,7 +60,7 @@ Converts a json object or array into a string.
 
 Returns *returnValue*, a string encoded value.
 
-### crypto.verifyDate(date: number) : range: number
+### crypto.isDateWithinRange(date: number, range: number) : boolean
 Validates a given date is within (+/-) a specified range.
 
 * `date` - a unix timestamp in milliseconds 
@@ -96,7 +96,7 @@ Generates a detached signature of a value given a private key object.
 
 Returns a *signature*.
 
-### async crypto.verifySignature(value: string | object | array, signature: string, publicKey: string) : valid: boolean
+### async crypto.isValidSignature(value: string | object | array, signature: string, publicKey: string) : valid: boolean
 Validates a signature matches a given input value for a public key.
 
 * `value` - a string, object, or array (converts to string)
@@ -116,7 +116,7 @@ Returns a join proof array.
 * `date` - unix timestamp
 * `signature` - openpgp detatched signature of above
 
-### async crypto.verifyJoinProof(proof: any[]) : valid: boolean
+### async crypto.isValidJoinProof(proof: any[]) : valid: boolean
 Validates a join proof has accurate id, signature, and timestamp (10 min range).
 
 * `proof` - a join proof array
@@ -133,7 +133,7 @@ Returns a leave proof array.
 * `date` - unix timestamp
 * `signature` - openpgp detatched signature of above
 
-### async crypto.verifyLeaveProof(proof: any[], publicKey: string) : valid: boolean
+### async crypto.isValidLeaveProof(proof: any[], publicKey: string) : valid: boolean
 Validates a leave proof has accurate signature and timestamp (10 min range).
 
 * `proof` - a leave proof array
@@ -154,7 +154,7 @@ Returns a failure proof array.
 * `date` - unix timestamp when failure detected
 * `signature` - openpgp detatched signature of above
 
-### async crypto.verifyFailureProof(proof: any[], publicKey: string) : valid: boolean
+### async crypto.isValidFailureProof(proof: any[], publicKey: string) : valid: boolean
 Validates a failure proof has accurate signature and timestamp (10 min range).
 
 * `proof` - a leave proof array
