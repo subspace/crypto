@@ -71,11 +71,11 @@ export async function generateKeys(options: interfaces.optionsObject) {
   }
 }
 
-export async function getPrivateKeyObject(privateKey: string) {
+export async function getPrivateKeyObject(privateKey: string, passphrase: string) {
   // extracts the private key object for signature and encryption
   try {
     const privateKeyObject = (await openpgp.key.readArmored(privateKey)).keys[0]
-    await privateKeyObject.decrypt('passphrase')
+    await privateKeyObject.decrypt(passphrase)
     return privateKeyObject
   } 
 
