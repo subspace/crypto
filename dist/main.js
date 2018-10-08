@@ -64,6 +64,16 @@ exports.isDateWithinRange = isDateWithinRange;
 async function generateKeys(options) {
     // generate an ECDSA key pair with openpgp
     try {
+        if (!options) {
+            options = {
+                userIds: [{
+                        name: 'name',
+                        email: 'name@email.com'
+                    }],
+                curve: 'ed25519',
+                passphrase: 'passphrase'
+            };
+        }
         const keys = await openpgp.generateKey(options);
         return keys;
     }
@@ -74,11 +84,11 @@ async function generateKeys(options) {
     }
 }
 exports.generateKeys = generateKeys;
-async function getPrivateKeyObject(privateKey) {
+async function getPrivateKeyObject(privateKey, passphrase) {
     // extracts the private key object for signature and encryption
     try {
         const privateKeyObject = (await openpgp.key.readArmored(privateKey)).keys[0];
-        await privateKeyObject.decrypt('passphrase');
+        await privateKeyObject.decrypt(passphrase);
         return privateKeyObject;
     }
     catch (error) {

@@ -57,9 +57,20 @@ export function isDateWithinRange(date: number, range: number) {
   return valid
 }
 
-export async function generateKeys(options: interfaces.optionsObject) {
+export async function generateKeys(options?: interfaces.optionsObject) {
   // generate an ECDSA key pair with openpgp
   try {
+    if (!options) {
+      options = {
+        userIds: [{
+          name: 'name',
+          email: 'name@email.com'
+        }],
+        curve: 'ed25519',
+        passphrase: 'passphrase'
+      }
+    }
+    
     const keys: openpgp.KeyContainer = await openpgp.generateKey(options)
     return keys 
   } 

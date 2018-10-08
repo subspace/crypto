@@ -24,7 +24,7 @@ const generateKeys = async () => {
     const profile = {
         publicKey: key.publicKeyArmored,
         privateKey: key.privateKeyArmored,
-        privateKeyObject: await crypto.getPrivateKeyObject(key.privateKeyArmored)
+        privateKeyObject: await crypto.getPrivateKeyObject(key.privateKeyArmored, 'some text')
     };
     return profile;
 };
