@@ -2,6 +2,8 @@ import crypto from 'crypto'
 import * as I from './interfaces'
 const openpgp = require('openpgp')
 const aesjs = require('aes-js')
+const XXH = require('xxhashjs')
+
 
 // TODO
   // replace profile with profile object and type def
@@ -20,6 +22,12 @@ export function getHash(value: string) {
   hasher.update(value)
   const hash: string = hasher.digest('hex')
   return hash
+}
+
+export function getHash64(value: string) {
+  const key = 0xABCD
+  const eightByteHash = Buffer.from(XXH.h64(value, key).toString('16'), 'hex')
+  return eightByteHash
 }
 
 export function isValidHash(hash: string, value: string) {
@@ -374,5 +382,7 @@ export function decryptSymmetric(encryptedValue: string, symkey: string): Promis
     }
   })
 }
+
+
 
 

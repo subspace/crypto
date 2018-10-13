@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const crypto_1 = __importDefault(require("crypto"));
 const openpgp = require('openpgp');
 const aesjs = require('aes-js');
+const XXH = require('xxhashjs');
 // TODO
 // replace profile with profile object and type def
 // replace value with record interfarce
@@ -24,6 +25,12 @@ function getHash(value) {
     return hash;
 }
 exports.getHash = getHash;
+function getHash64(value) {
+    const key = 0xABCD;
+    const eightByteHash = Buffer.from(XXH.h64(value, key).toString('16'), 'hex');
+    return eightByteHash;
+}
+exports.getHash64 = getHash64;
 function isValidHash(hash, value) {
     // checks to ensure a supplied hash matches a value
     const valid = hash === getHash(value);

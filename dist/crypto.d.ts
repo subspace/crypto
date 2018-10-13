@@ -1,5 +1,6 @@
 /// <reference types="node" />
 export declare function getHash(value: string): string;
+export declare function getHash64(value: string): Buffer;
 export declare function isValidHash(hash: string, value: string): boolean;
 export declare function getRandom(): string;
 export declare function read(buffer: Buffer): string;
