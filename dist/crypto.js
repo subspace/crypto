@@ -61,19 +61,17 @@ function isDateWithinRange(date, range) {
     return valid;
 }
 exports.isDateWithinRange = isDateWithinRange;
-async function generateKeys(options) {
+async function generateKeys(name, email, passphrase) {
     // generate an ECDSA key pair with openpgp
     try {
-        if (!options) {
-            options = {
-                userIds: [{
-                        name: 'name',
-                        email: 'name@email.com'
-                    }],
-                curve: 'ed25519',
-                passphrase: 'passphrase'
-            };
-        }
+        const options = {
+            userIds: [{
+                    name: name,
+                    email: email
+                }],
+            curve: 'ed25519',
+            passphrase: passphrase
+        };
         const keys = await openpgp.generateKey(options);
         return keys;
     }
@@ -367,4 +365,4 @@ function decryptSymmetric(encryptedValue, symkey) {
     });
 }
 exports.decryptSymmetric = decryptSymmetric;
-//# sourceMappingURL=main.js.map
+//# sourceMappingURL=crypto.js.map

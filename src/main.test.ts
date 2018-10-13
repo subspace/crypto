@@ -1,19 +1,16 @@
-import * as crypto from "./main"
+import * as crypto from "./crypto"
 import * as interfaces from './interfaces'
 
 const value: string = 'hello subspace'
 const falseValue: string = 'herro rubrace'
 const hash: string = '00ba5188adff22ee1f8abc61d6e96c371f0d505ec76f90e86d4b0c8748d646bb'
 const generateKeys = async () => {
-  const options: interfaces.optionsObject = {
-    userIds: [{ 
-      name: 'me',
-      email: 'me@me.com' 
-    }],
-    curve: "ed25519",
-    passphrase: 'some text'
-  }
-  const key: any = await crypto.generateKeys(options)
+
+
+  const name = 'me'
+  const email = 'me@me.com'
+  const passphrase = 'some text'
+  const key: any = await crypto.generateKeys(name, email, passphrase)
   const profile: object = {
     publicKey: key.publicKeyArmored,
     privateKey: key.privateKeyArmored,

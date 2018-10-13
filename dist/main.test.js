@@ -7,20 +7,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const crypto = __importStar(require("./main"));
+const crypto = __importStar(require("./crypto"));
 const value = 'hello subspace';
 const falseValue = 'herro rubrace';
 const hash = '00ba5188adff22ee1f8abc61d6e96c371f0d505ec76f90e86d4b0c8748d646bb';
 const generateKeys = async () => {
-    const options = {
-        userIds: [{
-                name: 'me',
-                email: 'me@me.com'
-            }],
-        curve: "ed25519",
-        passphrase: 'some text'
-    };
-    const key = await crypto.generateKeys(options);
+    const name = 'me';
+    const email = 'me@me.com';
+    const passphrase = 'some text';
+    const key = await crypto.generateKeys(name, email, passphrase);
     const profile = {
         publicKey: key.publicKeyArmored,
         privateKey: key.privateKeyArmored,
