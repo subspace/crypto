@@ -57,7 +57,7 @@ export function isDateWithinRange(date: number, range: number) {
   return valid
 }
 
-export async function generateKeys(name: string, email: string, passphrase: string): Promise<openpgp.KeyContainer> {
+export function generateKeys(name: string, email: string, passphrase: string): Promise<openpgp.KeyContainer> {
   // generate an ECDSA key pair with openpgp
   return new Promise<openpgp.KeyContainer> (async (resolve, reject) => {
     try {
@@ -79,7 +79,7 @@ export async function generateKeys(name: string, email: string, passphrase: stri
   })
 }
 
-export async function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<any> {
+export function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<any> {
   return new Promise<any> (async (resolve, reject) => {
     // extracts the private key object for signature and encryption
     try {

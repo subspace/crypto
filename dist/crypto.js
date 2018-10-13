@@ -61,39 +61,39 @@ function isDateWithinRange(date, range) {
     return valid;
 }
 exports.isDateWithinRange = isDateWithinRange;
-async function generateKeys(name, email, passphrase) {
+function generateKeys(name, email, passphrase) {
     // generate an ECDSA key pair with openpgp
-    try {
-        const options = {
-            userIds: [{
-                    name: name,
-                    email: email
-                }],
-            curve: 'ed25519',
-            passphrase: passphrase
-        };
-        const keys = await openpgp.generateKey(options);
-        return keys;
-    }
-    catch (error) {
-        console.log('Error generating keys');
-        console.log(error);
-        return (error);
-    }
+    return new Promise(async (resolve, reject) => {
+        try {
+            const options = {
+                userIds: [{
+                        name: name,
+                        email: email
+                    }],
+                curve: 'ed25519',
+                passphrase: passphrase
+            };
+            const keys = await openpgp.generateKey(options);
+            resolve(keys);
+        }
+        catch (error) {
+            reject(error);
+        }
+    });
 }
 exports.generateKeys = generateKeys;
-async function getPrivateKeyObject(privateKey, passphrase) {
-    // extracts the private key object for signature and encryption
-    try {
-        const privateKeyObject = (await openpgp.key.readArmored(privateKey)).keys[0];
-        await privateKeyObject.decrypt(passphrase);
-        return privateKeyObject;
-    }
-    catch (error) {
-        console.log('Error getting private key object');
-        console.log(error);
-        return (error);
-    }
+function getPrivateKeyObject(privateKey, passphrase) {
+    return new Promise(async (resolve, reject) => {
+        // extracts the private key object for signature and encryption
+        try {
+            const privateKeyObject = (await openpgp.key.readArmored(privateKey)).keys[0];
+            await privateKeyObject.decrypt(passphrase);
+            resolve(privateKeyObject);
+        }
+        catch (error) {
+            reject(error);
+        }
+    });
 }
 exports.getPrivateKeyObject = getPrivateKeyObject;
 function sign(value, privateKeyObject) {
@@ -112,8 +112,6 @@ function sign(value, privateKeyObject) {
             resolve(signature);
         }
         catch (error) {
-            console.log('Error generating signature');
-            console.log(error);
             reject(error);
         }
     });
@@ -137,8 +135,6 @@ function isValidSignature(value, signature, publicKey) {
             resolve(valid);
         }
         catch (error) {
-            console.log('Error verifying signature');
-            console.log(error);
             reject(error);
         }
     });
@@ -298,8 +294,6 @@ function encryptAssymetric(value, publicKey) {
             resolve(encryptedValue);
         }
         catch (error) {
-            console.log('Error encrypting symmetric key with private key');
-            console.log(error);
             reject(error);
         }
     });
@@ -318,8 +312,6 @@ function decryptAssymetric(value, privateKeyObject) {
             resolve(decryptedValue);
         }
         catch (error) {
-            console.log('Error decrypting symmetric key with private key');
-            console.log(error);
             reject(error);
         }
     });
@@ -338,8 +330,6 @@ function encryptSymmetric(value, symkey) {
             resolve(encryptedHex);
         }
         catch (error) {
-            console.log('Error encrypting record value with symmetric key');
-            console.log(error);
             reject(error);
         }
     });
@@ -358,8 +348,6 @@ function decryptSymmetric(encryptedValue, symkey) {
             resolve(decryptedText);
         }
         catch (error) {
-            console.log('Error decrypting with symmetric key');
-            console.log(error);
             reject(error);
         }
     });

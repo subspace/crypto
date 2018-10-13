@@ -5,7 +5,7 @@ export declare function getRandom(): string;
 export declare function read(buffer: Buffer): string;
 export declare function stringify(value: string | object | any[]): string;
 export declare function isDateWithinRange(date: number, range: number): boolean;
-export declare function generateKeys(name: string, email: string, passphrase: string): Promise<any>;
+export declare function generateKeys(name: string, email: string, passphrase: string): Promise<openpgp.KeyContainer>;
 export declare function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<any>;
 export declare function sign(value: string | object | any[], privateKeyObject: any): Promise<string>;
 export declare function isValidSignature(value: string | object | any[], signature: string, publicKey: string): Promise<boolean>;
