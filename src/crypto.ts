@@ -57,43 +57,40 @@ export function isDateWithinRange(date: number, range: number) {
   return valid
 }
 
-export async function generateKeys(name: string, email: string, passphrase: string) {
+export async function generateKeys(name: string, email: string, passphrase: string): Promise<openpgp.KeyContainer> {
   // generate an ECDSA key pair with openpgp
-  try {
-
-     const options: I.optionsObject = {
-      userIds: [{
-        name: name,
-        email: email
-      }],
-      curve: 'ed25519',
-      passphrase: passphrase
-    }
-
-    const keys: openpgp.KeyContainer = await openpgp.generateKey(options)
-    return keys 
-  } 
+  return new Promise<openpgp.KeyContainer> (async (resolve, reject) => {
+    try {
+      const options: I.optionsObject = {
+        userIds: [{
+          name: name,
+          email: email
+        }],
+        curve: 'ed25519',
+        passphrase: passphrase
+      }
   
-  catch(error) {
-    console.log('Error generating keys')
-    console.log(error)
-    return(error)
-  }
+      const keys: openpgp.KeyContainer = await openpgp.generateKey(options)
+      resolve(keys)
+    }
+    catch(error) {
+      reject(error)
+    }
+  })
 }
 
-export async function getPrivateKeyObject(privateKey: string, passphrase: string) {
-  // extracts the private key object for signature and encryption
-  try {
-    const privateKeyObject = (await openpgp.key.readArmored(privateKey)).keys[0]
-    await privateKeyObject.decrypt(passphrase)
-    return privateKeyObject
-  } 
-
-  catch (error) {
-    console.log('Error getting private key object')
-    console.log(error)
-    return(error)
-  }
+export async function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<any> {
+  return new Promise<any> (async (resolve, reject) => {
+    // extracts the private key object for signature and encryption
+    try {
+      const privateKeyObject = (await openpgp.key.readArmored(privateKey)).keys[0]
+      await privateKeyObject.decrypt(passphrase)
+      resolve(privateKeyObject)
+    }
+    catch(error) {
+      reject(error)
+    }
+  })
 }
 
 export function sign(value: string | object | any[], privateKeyObject: any): Promise<string> {
@@ -113,15 +110,10 @@ export function sign(value: string | object | any[], privateKeyObject: any): Pro
       const signature: string = signed.signature
       resolve(signature)
     } 
-  
     catch (error) {
-      console.log('Error generating signature')
-      console.log(error)
       reject(error)
     }
-
   })
-  
 }
 
 export function isValidSignature(value: string | object | any[], signature: string, publicKey: string): Promise<boolean> {
@@ -145,8 +137,6 @@ export function isValidSignature(value: string | object | any[], signature: stri
     } 
   
     catch (error) {
-      console.log('Error verifying signature')
-      console.log(error)
       reject(error)
     }
   })  
@@ -324,14 +314,10 @@ export function encryptAssymetric(value: string, publicKey: string): Promise <st
       const encryptedValue: string = cipherText.data
       resolve(encryptedValue)
     } 
-  
     catch (error) {
-      console.log('Error encrypting symmetric key with private key')
-      console.log(error)
       reject(error)
     }
   })
-  
 }
 
 export function decryptAssymetric(value: string, privateKeyObject: object): Promise <string> {
@@ -347,14 +333,10 @@ export function decryptAssymetric(value: string, privateKeyObject: object): Prom
       const decryptedValue: string = plainText.data
       resolve(decryptedValue)
     } 
-  
     catch (error) {
-      console.log('Error decrypting symmetric key with private key')
-      console.log(error)
       reject(error)
     }
   })
-  
 }
 
 export function encryptSymmetric(value: string, symkey: string): Promise <string> {
@@ -369,10 +351,7 @@ export function encryptSymmetric(value: string, symkey: string): Promise <string
       const encryptedHex: string = aesjs.utils.hex.fromBytes(encryptedBytes)
       resolve(encryptedHex)
     } 
-  
     catch (error) {
-      console.log('Error encrypting record value with symmetric key')
-      console.log(error)
       reject(error)
     }
   })
@@ -390,10 +369,7 @@ export function decryptSymmetric(encryptedValue: string, symkey: string): Promis
       const decryptedText: string = aesjs.utils.utf8.fromBytes(decryptedBytes)
       resolve(decryptedText)
     } 
-  
     catch (error) {
-      console.log('Error decrypting with symmetric key')
-      console.log(error)
       reject(error)
     }
   })
