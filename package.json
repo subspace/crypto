@@ -7,11 +7,13 @@
   "license": "MIT",
   "test": "jest",
   "dependencies": {
+    "@subspace/jump-consistent-hash": "github:subspace/jump-consistent-hash",
+    "@subspace/rendezvous-hash": "github:subspace/rendezvous-hash",
     "@types/node": "^10.9.2",
     "@types/openpgp": "^0.0.30",
     "aes-js": "^3.1.1",
     "openpgp": "^4.0.0",
-    "typescript": "^3.0.1",
+    "typescript": "^3.0.3",
     "xxhashjs": "^0.2.2"
   },
   "devDependencies": {

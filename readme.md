@@ -19,7 +19,7 @@ let hash: string = crypto.getHash('abc')
 
 // or
 
-import { getHash } from 'subspace-crypto'
+import { getHash } from '@subspace/crypto'
 
 let hash: string = getHash('abc')
 
@@ -201,6 +201,57 @@ Measures the XOR distance between two numbers
 * `b` - any number of the same length
 
 Returns a result as a Buffer.
+
+### crypto.jumpConsistentHash(key: Uint8Array, numBuckets: number): number
+Takes a key and number of buckets and returns bucket from range `[0, numBuckets)`.
+
+* `key` - 8 bytes key
+* `numBuckets` - number of buckets to which keys should be distributed
+
+Example:
+```typescript
+import {randomBytes} from 'crypto';
+import {jumpConsistentHash} from '@subspace/crypto';
+
+const bucket = jumpConsistentHash(randomBytes(8), 10);
+```
+
+### crypto.rendezvousHashPickDestinations(keyHash: Uint8Array, destinations: Destination[], k: number = 1): Uint8Array[]
+Takes a key and an array of potential destinations and returns `k` closest destinations to that key.
+
+* `keyHash` - 8 bytes hash of the key
+* `destinations` - an array of destination objects that are potential candidates
+* `k` - how many closest destinations for specified key to return
+
+Returns an array of IDs of keys (first argument to `Destination` object below).
+
+Example:
+```typescript
+import {randomBytes} from 'crypto';
+import {rendezvousHashDestination as Destination, rendezvousHashPickDestinations as pickDestinations} from '@subspace/crypto';
+
+const destinations: Destination[] = [
+    new Destination(randomBytes(8)),
+    new Destination(randomBytes(8)),
+];
+const keys: Uint8Array[] = [
+    randomBytes(8),
+    randomBytes(8),
+    randomBytes(8),
+    randomBytes(8),
+    randomBytes(8),
+];
+
+for (const key of keys) {
+    const destination = pickDestinations(key, destinations)[0];
+    console.log(destination.id)
+}
+```
+
+### crypto.rendezvousHashDestination(readonly id: Uint8Array, readonly weight: number = 1)
+Class that encapsulates information about particular destination.
+
+`id` and `weight` are pubic readonly properties of resulting object
 
 ## Development usage
 
