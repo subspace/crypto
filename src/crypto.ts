@@ -245,7 +245,7 @@ export async function encryptAssymetric(value: string, publicKey: string) {
   
 }
 
-export function decryptAssymetric(value: string, privateKeyObject: object) {
+export async function decryptAssymetric(value: string, privateKeyObject: object) {
   // decrypt a symmetric key with a private key
 
   const options: interfaces.decryptionOptions = {
