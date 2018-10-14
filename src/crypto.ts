@@ -4,6 +4,8 @@ const openpgp = require('openpgp')
 const aesjs = require('aes-js')
 const XXH = require('xxhashjs')
 
+export {default as jumpConsistentHash} from '@subspace/jump-consistent-hash'
+export {Destination as rendezvousHashDestination, pickDestinations as rendezvousHashPickDestinations} from '@subspace/rendezvous-hash'
 
 // TODO
   // replace profile with profile object and type def
@@ -14,7 +16,7 @@ const XXH = require('xxhashjs')
   // remove/replace PGP padding on keys and signatures
   // replace AES-JS with native crypto or openpgp symmetric encryption
   // implement parsec consensus for node failures
-  // use SSCL block hashes in place of time stamps 
+  // use SSCL block hashes in place of time stamps
 
 export function getHash(value: string) {
   // returns the sha256 hash of a string value
@@ -33,7 +35,7 @@ export function getHash64(value: string) {
 export function isValidHash(hash: string, value: string) {
   // checks to ensure a supplied hash matches a value
   const valid: boolean = hash === getHash(value)
-  return valid 
+  return valid
 }
 
 export function getRandom() {
@@ -51,7 +53,7 @@ export function read(buffer: Buffer) {
 }
 
 export function stringify(value: string | object | any[]) {
-  // object and array can be of many types! just a generic encoding function 
+  // object and array can be of many types! just a generic encoding function
   if (typeof value === 'object') {
     if (Array.isArray(value)) value = value.toString()
     else value = JSON.stringify(value)
@@ -66,7 +68,7 @@ export function isDateWithinRange(date: number, range: number) {
 }
 
 export async function generateKeys(name: string, email: string, passphrase: string) {
-  
+
   const options: interfaces.optionsObject = {
     userIds: [{
       name: name,
@@ -81,10 +83,10 @@ export async function generateKeys(name: string, email: string, passphrase: stri
 
 export async function getPrivateKeyObject(privateKey: string, passphrase: string) {
   const privateKeyObject = (await openpgp.key.readArmored(privateKey)).keys[0]
-  return privateKeyObject.decrypt(passphrase)    
+  return privateKeyObject.decrypt(passphrase)
 }
 
-export async function sign(value: string | object | any[], privateKeyObject: any) { 
+export async function sign(value: string | object | any[], privateKeyObject: any) {
   const data: string = stringify(value)
 
   const options: interfaces.signatureOptions = {
@@ -94,15 +96,15 @@ export async function sign(value: string | object | any[], privateKeyObject: any
   }
 
   const signed: interfaces.signatureValue = await openpgp.sign(options)
-  return signed.signature    
+  return signed.signature
 }
 
 export async function isValidSignature(value: string | object | any[], signature: string, publicKey: string) {
   // verifies a detached signature on a message given a public key for
     // RPC message signatures
     // Join, Leave, and Failure proofs (LHT entries)
-    // SSDB record signatures 
-  
+    // SSDB record signatures
+
   const message = stringify(value)
 
   const options: interfaces.verifySignatureOptions  = {
@@ -118,8 +120,8 @@ export async function isValidSignature(value: string | object | any[], signature
 
 export async function createJoinProof(profile: any) {
   // how would you import the profile interface from @subspace/profile?
-  // creates a signed proof from a host node, showing they have joined the LHT 
-  
+  // creates a signed proof from a host node, showing they have joined the LHT
+
   const data: any[] = [
     profile.hexId,
     profile.publicKey,
@@ -133,7 +135,7 @@ export async function createJoinProof(profile: any) {
 
 export async function isValidJoinProof(data: any[]) {
   // verifies a join proof received from another node or when validating a LHT received over sync()
- 
+
   const validity: interfaces.validityValue = {
     isValid: true,
     reply: {
@@ -141,7 +143,7 @@ export async function isValidJoinProof(data: any[]) {
       data: null
     },
   }
-  
+
   const hexId: string = data[0]
   const publicKey: string = data[1]
   const timeStamp: number = data[2]
@@ -171,7 +173,7 @@ export async function isValidJoinProof(data: any[]) {
 
 export async function createLeaveProof(profile: any) {
   // allows a peer to announce they have left the network as part of a graceful shutdown
-  
+
   const data: any[] = [
     profile.hexId,
     Date.now()
@@ -183,7 +185,7 @@ export async function createLeaveProof(profile: any) {
 }
 
 export async function isValidLeaveProof(data: any[], publicKey: string) {
-  // verifies a leave proof received from another node or when validating an LHT received over sync 
+  // verifies a leave proof received from another node or when validating an LHT received over sync
 
   const validity: interfaces.validityValue = {
     isValid: true,
@@ -213,7 +215,7 @@ export async function isValidLeaveProof(data: any[], publicKey: string) {
   return validity
 }
 
-export async function createFailureProof(peerId: string, profile: any) { 
+export async function createFailureProof(peerId: string, profile: any) {
   // PBFT 2/3 vote for now
   // will implement the parsec consensus protocol as a separate module later
 
@@ -227,7 +229,7 @@ export async function createFailureProof(peerId: string, profile: any) {
 export async function isValidFailureProof(data: any[], publicKey: string) {
   // PBFT 2/3 vote for now
   // will implement the parsec consensus protocol as a separate module later
-    
+
   // called when a failure message is received
   // validates the message and updates the tally in members
 }
@@ -241,8 +243,8 @@ export async function encryptAssymetric(value: string, publicKey: string) {
 
   const cipherText: interfaces.encryptedValueObject = await openpgp.encrypt(options)
   return cipherText.data
-      
-  
+
+
 }
 
 export async function decryptAssymetric(value: string, privateKeyObject: object) {
@@ -273,7 +275,7 @@ export function decryptSymmetric(encryptedValue: string, symkey: string) {
   const aesCtr: any = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5))
   const decryptedBytes: Uint8Array[] = aesCtr.decrypt(encryptedBytes)
   const decryptedText: string = aesjs.utils.utf8.fromBytes(decryptedBytes)
-  return decryptedText 
+  return decryptedText
 }
 
 
