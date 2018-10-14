@@ -98,48 +98,52 @@ async function getPrivateKeyObject(privateKey, passphrase) {
     }
 }
 exports.getPrivateKeyObject = getPrivateKeyObject;
-async function sign(value, privateKeyObject) {
+function sign(value, privateKeyObject) {
     // cannot figure out the type for privateKeyObject and openpgp does not have a defined type
     // creates a detached signature given a value and a private key
-    try {
-        const data = stringify(value);
-        const options = {
-            message: openpgp.cleartext.fromText(value),
-            privateKeys: [privateKeyObject],
-            detached: true
-        };
-        const signed = await openpgp.sign(options);
-        const signature = signed.signature;
-        return signature;
-    }
-    catch (error) {
-        console.log('Error generating signature');
-        console.log(error);
-        return (error);
-    }
+    return new Promise(async (resolve, reject) => {
+        try {
+            const data = stringify(value);
+            const options = {
+                message: openpgp.cleartext.fromText(value),
+                privateKeys: [privateKeyObject],
+                detached: true
+            };
+            const signed = await openpgp.sign(options);
+            const signature = signed.signature;
+            resolve(signature);
+        }
+        catch (error) {
+            console.log('Error generating signature');
+            console.log(error);
+            reject(error);
+        }
+    });
 }
 exports.sign = sign;
-async function isValidSignature(value, signature, publicKey) {
+function isValidSignature(value, signature, publicKey) {
     // verifies a detached signature on a message given a public key for
     // RPC message signatures
     // Join, Leave, and Failure proofs (LHT entries)
     // SSDB record signatures 
-    try {
-        const message = stringify(value);
-        const options = {
-            message: openpgp.message.fromText(message),
-            signature: openpgp.signature.readArmored(signature),
-            publicKeys: openpgp.key.readArmored(publicKey).keys
-        };
-        const verified = await openpgp.verify(options);
-        const valid = verified.signatures[0].valid;
-        return valid;
-    }
-    catch (error) {
-        console.log('Error verifying signature');
-        console.log(error);
-        return (error);
-    }
+    return new Promise(async (resolve, reject) => {
+        try {
+            const message = stringify(value);
+            const options = {
+                message: openpgp.message.fromText(message),
+                signature: openpgp.signature.readArmored(signature),
+                publicKeys: openpgp.key.readArmored(publicKey).keys
+            };
+            const verified = await openpgp.verify(options);
+            const valid = verified.signatures[0].valid;
+            resolve(valid);
+        }
+        catch (error) {
+            console.log('Error verifying signature');
+            console.log(error);
+            reject(error);
+        }
+    });
 }
 exports.isValidSignature = isValidSignature;
 async function createJoinProof(profile) {
@@ -283,76 +287,84 @@ async function isValidFailureProof(data, publicKey) {
     }
 }
 exports.isValidFailureProof = isValidFailureProof;
-async function encryptAssymetric(value, publicKey) {
+function encryptAssymetric(value, publicKey) {
     // encrypt a symmetric key with a private key
-    try {
-        const options = {
-            data: value,
-            publicKeys: openpgp.key.readArmored(publicKey).keys
-        };
-        const cipherText = await openpgp.encrypt(options);
-        const encryptedValue = cipherText.data;
-        return encryptedValue;
-    }
-    catch (error) {
-        console.log('Error encrypting symmetric key with private key');
-        console.log(error);
-        return (error);
-    }
+    return new Promise(async (resolve, reject) => {
+        try {
+            const options = {
+                data: value,
+                publicKeys: openpgp.key.readArmored(publicKey).keys
+            };
+            const cipherText = await openpgp.encrypt(options);
+            const encryptedValue = cipherText.data;
+            resolve(encryptedValue);
+        }
+        catch (error) {
+            console.log('Error encrypting symmetric key with private key');
+            console.log(error);
+            reject(error);
+        }
+    });
 }
 exports.encryptAssymetric = encryptAssymetric;
-async function decryptAssymetric(value, privateKeyObject) {
+function decryptAssymetric(value, privateKeyObject) {
     // decrypt a symmetric key with a private key
-    try {
-        const options = {
-            message: openpgp.message.readArmored(value),
-            privateKeys: [privateKeyObject]
-        };
-        const plainText = await openpgp.decrypt(options);
-        const decryptedValue = plainText.data;
-        return decryptedValue;
-    }
-    catch (error) {
-        console.log('Error decrypting symmetric key with private key');
-        console.log(error);
-        return (error);
-    }
+    return new Promise(async (resolve, reject) => {
+        try {
+            const options = {
+                message: openpgp.message.readArmored(value),
+                privateKeys: [privateKeyObject]
+            };
+            const plainText = await openpgp.decrypt(options);
+            const decryptedValue = plainText.data;
+            resolve(decryptedValue);
+        }
+        catch (error) {
+            console.log('Error decrypting symmetric key with private key');
+            console.log(error);
+            reject(error);
+        }
+    });
 }
 exports.decryptAssymetric = decryptAssymetric;
-async function encryptSymmetric(value, symkey) {
+function encryptSymmetric(value, symkey) {
     // encrypts a record value with a symmetric key
-    try {
-        const key = Buffer.from(symkey, 'hex');
-        const byteValue = aesjs.utils.utf8.toBytes(value);
-        const aesCtr = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5));
-        // an insanely compplex object, feel free to add an interface!
-        const encryptedBytes = aesCtr.encrypt(byteValue);
-        const encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
-        return encryptedHex;
-    }
-    catch (error) {
-        console.log('Error encrypting record value with symmetric key');
-        console.log(error);
-        return (error);
-    }
+    return new Promise(async (resolve, reject) => {
+        try {
+            const key = Buffer.from(symkey, 'hex');
+            const byteValue = aesjs.utils.utf8.toBytes(value);
+            const aesCtr = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5));
+            // an insanely compplex object, feel free to add an interface!
+            const encryptedBytes = aesCtr.encrypt(byteValue);
+            const encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+            resolve(encryptedHex);
+        }
+        catch (error) {
+            console.log('Error encrypting record value with symmetric key');
+            console.log(error);
+            reject(error);
+        }
+    });
 }
 exports.encryptSymmetric = encryptSymmetric;
-async function decryptSymmetric(encryptedValue, symkey) {
+function decryptSymmetric(encryptedValue, symkey) {
     // decrypts a record value with a symmetric key
-    try {
-        const key = Buffer.from(symkey, 'hex');
-        const encryptedBytes = aesjs.utils.hex.toBytes(encryptedValue);
-        const aesCtr = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5));
-        // an insanely compplex object, feel free to add an interface!
-        const decryptedBytes = aesCtr.decrypt(encryptedBytes);
-        const decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
-        return decryptedText;
-    }
-    catch (error) {
-        console.log('Error decrypting with symmetric key');
-        console.log(error);
-        return (error);
-    }
+    return new Promise(async (resolve, reject) => {
+        try {
+            const key = Buffer.from(symkey, 'hex');
+            const encryptedBytes = aesjs.utils.hex.toBytes(encryptedValue);
+            const aesCtr = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5));
+            // an insanely compplex object, feel free to add an interface!
+            const decryptedBytes = aesCtr.decrypt(encryptedBytes);
+            const decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+            resolve(decryptedText);
+        }
+        catch (error) {
+            console.log('Error decrypting with symmetric key');
+            console.log(error);
+            reject(error);
+        }
+    });
 }
 exports.decryptSymmetric = decryptSymmetric;
 //# sourceMappingURL=main.js.map
