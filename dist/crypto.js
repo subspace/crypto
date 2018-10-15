@@ -7,6 +7,11 @@ const crypto_1 = __importDefault(require("crypto"));
 const openpgp = require('openpgp');
 const aesjs = require('aes-js');
 const XXH = require('xxhashjs');
+var jump_consistent_hash_1 = require("@subspace/jump-consistent-hash");
+exports.jumpConsistentHash = jump_consistent_hash_1.default;
+var rendezvous_hash_1 = require("@subspace/rendezvous-hash");
+exports.rendezvousHashDestination = rendezvous_hash_1.Destination;
+exports.rendezvousHashPickDestinations = rendezvous_hash_1.pickDestinations;
 // TODO
 // replace profile with profile object and type def
 // replace value with record interfarce
@@ -16,7 +21,7 @@ const XXH = require('xxhashjs');
 // remove/replace PGP padding on keys and signatures
 // replace AES-JS with native crypto or openpgp symmetric encryption
 // implement parsec consensus for node failures
-// use SSCL block hashes in place of time stamps 
+// use SSCL block hashes in place of time stamps
 function getHash(value) {
     // returns the sha256 hash of a string value
     const hasher = crypto_1.default.createHash('sha256');
@@ -52,7 +57,7 @@ function read(buffer) {
 }
 exports.read = read;
 function stringify(value) {
-    // object and array can be of many types! just a generic encoding function 
+    // object and array can be of many types! just a generic encoding function
     if (typeof value === 'object') {
         if (Array.isArray(value))
             value = value.toString();
@@ -100,7 +105,7 @@ async function isValidSignature(value, signature, publicKey) {
     // verifies a detached signature on a message given a public key for
     // RPC message signatures
     // Join, Leave, and Failure proofs (LHT entries)
-    // SSDB record signatures 
+    // SSDB record signatures
     const message = stringify(value);
     const options = {
         message: openpgp.message.fromText(message),
@@ -114,7 +119,7 @@ async function isValidSignature(value, signature, publicKey) {
 exports.isValidSignature = isValidSignature;
 async function createJoinProof(profile) {
     // how would you import the profile interface from @subspace/profile?
-    // creates a signed proof from a host node, showing they have joined the LHT 
+    // creates a signed proof from a host node, showing they have joined the LHT
     const data = [
         profile.hexId,
         profile.publicKey,
@@ -169,7 +174,7 @@ async function createLeaveProof(profile) {
 }
 exports.createLeaveProof = createLeaveProof;
 async function isValidLeaveProof(data, publicKey) {
-    // verifies a leave proof received from another node or when validating an LHT received over sync 
+    // verifies a leave proof received from another node or when validating an LHT received over sync
     const validity = {
         isValid: true,
         reply: {
