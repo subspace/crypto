@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import * as interfaces from './interfaces';
-export { default as jumpConsistentHash } from '@subspace/jump-consistent-hash';
+export { jumpConsistentHash } from '@subspace/jump-consistent-hash';
 export { Destination as rendezvousHashDestination, pickDestinations as rendezvousHashPickDestinations } from '@subspace/rendezvous-hash';
 export declare function getHash(value: string): string;
 export declare function getHash64(value: string): Buffer;

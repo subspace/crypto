@@ -1,10 +1,10 @@
-import crypto from 'crypto'
+import * as crypto from 'crypto'
 import * as interfaces from './interfaces'
 const openpgp = require('openpgp')
 const aesjs = require('aes-js')
 const XXH = require('xxhashjs')
 
-export {default as jumpConsistentHash} from '@subspace/jump-consistent-hash'
+export {jumpConsistentHash} from '@subspace/jump-consistent-hash'
 export {Destination as rendezvousHashDestination, pickDestinations as rendezvousHashPickDestinations} from '@subspace/rendezvous-hash'
 
 // TODO
