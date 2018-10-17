@@ -117,6 +117,12 @@ async function isValidSignature(value, signature, publicKey) {
     return valid;
 }
 exports.isValidSignature = isValidSignature;
+async function isValidMessageSignature(message) {
+    let detachedMessage = Object.assign({}, message);
+    detachedMessage.signature = null;
+    return await isValidSignature(detachedMessage, message.signature, message.publicKey);
+}
+exports.isValidMessageSignature = isValidMessageSignature;
 async function createJoinProof(profile) {
     // how would you import the profile interface from @subspace/profile?
     // creates a signed proof from a host node, showing they have joined the LHT

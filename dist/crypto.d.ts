@@ -13,6 +13,7 @@ export declare function generateKeys(name: string, email: string, passphrase: st
 export declare function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<any>;
 export declare function sign(value: string | object | any[], privateKeyObject: any): Promise<string>;
 export declare function isValidSignature(value: string | object | any[], signature: string, publicKey: string): Promise<boolean>;
+export declare function isValidMessageSignature(message: any): Promise<boolean>;
 export declare function createJoinProof(profile: any): Promise<any[]>;
 export declare function isValidJoinProof(data: any[]): Promise<interfaces.validityValue>;
 export declare function createLeaveProof(profile: any): Promise<any[]>;

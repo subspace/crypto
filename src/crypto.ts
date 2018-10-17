@@ -118,6 +118,12 @@ export async function isValidSignature(value: string | object | any[], signature
   return valid
 }
 
+export async function isValidMessageSignature(message: any) {
+  let detachedMessage = { ...message }
+  detachedMessage.signature = null
+  return await isValidSignature(detachedMessage, message.signature, message.publicKey)
+}
+
 export async function createJoinProof(profile: any) {
   // how would you import the profile interface from @subspace/profile?
   // creates a signed proof from a host node, showing they have joined the LHT
