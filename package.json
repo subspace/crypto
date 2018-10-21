@@ -2,7 +2,7 @@
   "name": "@subspace/crypto",
   "version": "0.0.1",
   "main": "dist/crypto.js",
-  "type": "dist/crypto.d.ts",
+  "types": "dist/crypto.d.ts",
   "author": "Jeremiah Wagstaff",
   "license": "MIT",
   "test": "jest",
