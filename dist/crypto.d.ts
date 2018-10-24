@@ -11,6 +11,16 @@ export declare function generateKeys(name: string, email: string, passphrase: st
 export declare function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<any>;
 export declare function sign(value: string | object | any[], privateKeyObject: any): Promise<string>;
 export declare function isValidSignature(value: string | object | any[], signature: string, publicKey: string): Promise<boolean>;
+export declare function createProofOfSpace(seed: string, size: number): {
+    id: string;
+    createdAt: number;
+    size: number;
+    seed: string;
+    plot: Set<string>;
+};
+export declare function isValidProofOfSpace(key: string, size: number, proofId: string): boolean;
+export declare function createProofOfTime(seed: string): number;
+export declare function isValidProofOfTime(seed: string, time: number): boolean;
 export declare function createJoinProof(profile: any): Promise<any[]>;
 export declare function isValidJoinProof(data: any[]): Promise<interfaces.validityValue>;
 export declare function createLeaveProof(profile: any): Promise<any[]>;

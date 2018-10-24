@@ -4,6 +4,8 @@ const openpgp = require('openpgp')
 const aesjs = require('aes-js')
 const XXH = require('xxhashjs')
 
+const BYTES_PER_HASH = 1000000    // one hash per MB of pledge for simple proof of space, 32 eventually
+
 
 // TODO
   // replace profile with profile object and type def
@@ -114,6 +116,48 @@ export async function isValidSignature(value: string | object | any[], signature
   const verified: openpgp.VerifiedMessage = await openpgp.verify(options)
   const valid: boolean = verified.signatures[0].valid
   return valid
+}
+
+export function createProofOfSpace(seed: string, size: number) {
+  // create a mock proof of space to represent your disk plot
+
+  const plot: Set<string> = new Set()
+  const plotSize = size / BYTES_PER_HASH
+
+  for(let i = 0; i < plotSize; i++) {
+    seed = getHash(seed)
+    plot.add(seed)
+  }
+
+  return {
+    id: getHash(JSON.stringify(plot)),
+    createdAt: Date.now(),
+    size,
+    seed,
+    plot
+  }
+}
+
+export function isValidProofOfSpace(key: string, size: number, proofId: string) {
+  // validates a mock proof of space 
+  
+  return proofId === createProofOfSpace(key, size).id
+}
+
+export function createProofOfTime(seed: string) {
+  // create a mock proof of time by converting a hex seed string into time in ms  
+
+  let time = 0
+  for (let char of seed) {
+    time += parseInt(char, 16) + 1
+  }
+  return time * 1000
+}
+
+export function isValidProofOfTime(seed: string, time: number) {
+  // validate a given proof of time
+
+  return time === createProofOfTime(seed)
 }
 
 export async function createJoinProof(profile: any) {
