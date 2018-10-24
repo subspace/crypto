@@ -18,6 +18,7 @@
     var rendezvous_hash_1 = require("@subspace/rendezvous-hash");
     exports.rendezvousHashDestination = rendezvous_hash_1.Destination;
     exports.rendezvousHashPickDestinations = rendezvous_hash_1.pickDestinations;
+    const BYTES_PER_HASH = 1000000; // one hash per MB of pledge for simple proof of space, 32 eventually
     // TODO
     // replace profile with profile object and type def
     // replace value with record interfarce
@@ -123,6 +124,42 @@
         return valid;
     }
     exports.isValidSignature = isValidSignature;
+    function createProofOfSpace(seed, size) {
+        // create a mock proof of space to represent your disk plot
+        const plot = new Set();
+        const plotSize = size / BYTES_PER_HASH;
+        for (let i = 0; i < plotSize; i++) {
+            seed = getHash(seed);
+            plot.add(seed);
+        }
+        return {
+            id: getHash(JSON.stringify(plot)),
+            createdAt: Date.now(),
+            size,
+            seed,
+            plot
+        };
+    }
+    exports.createProofOfSpace = createProofOfSpace;
+    function isValidProofOfSpace(key, size, proofId) {
+        // validates a mock proof of space 
+        return proofId === createProofOfSpace(key, size).id;
+    }
+    exports.isValidProofOfSpace = isValidProofOfSpace;
+    function createProofOfTime(seed) {
+        // create a mock proof of time by converting a hex seed string into time in ms  
+        let time = 0;
+        for (let char of seed) {
+            time += parseInt(char, 16) + 1;
+        }
+        return time * 1000;
+    }
+    exports.createProofOfTime = createProofOfTime;
+    function isValidProofOfTime(seed, time) {
+        // validate a given proof of time
+        return time === createProofOfTime(seed);
+    }
+    exports.isValidProofOfTime = isValidProofOfTime;
     async function isValidMessageSignature(message) {
         let detachedMessage = Object.assign({}, message);
         detachedMessage.signature = null;
