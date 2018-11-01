@@ -86,7 +86,8 @@ export async function generateKeys(name: string, email: string, passphrase: stri
 
 export async function getPrivateKeyObject(privateKey: string, passphrase: string) {
   const privateKeyObject = (await openpgp.key.readArmored(privateKey)).keys[0]
-  return privateKeyObject.decrypt(passphrase)
+  await privateKeyObject.decrypt(passphrase)
+  return privateKeyObject
 }
 
 export async function sign(value: string | object | any[], privateKeyObject: any) {
