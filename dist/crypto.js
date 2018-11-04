@@ -101,7 +101,7 @@
     async function sign(value, privateKeyObject) {
         const data = stringify(value);
         const options = {
-            message: openpgp.cleartext.fromText(value),
+            message: openpgp.cleartext.fromText(data),
             privateKeys: [privateKeyObject],
             detached: true
         };

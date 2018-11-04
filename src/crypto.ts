@@ -94,7 +94,7 @@ export async function sign(value: string | object | any[], privateKeyObject: any
   const data: string = stringify(value)
 
   const options: interfaces.signatureOptions = {
-    message: openpgp.cleartext.fromText(value),
+    message: openpgp.cleartext.fromText(data),
     privateKeys: [privateKeyObject],
     detached: true
   }
