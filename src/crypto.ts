@@ -91,7 +91,7 @@ export async function getPrivateKeyObject(privateKey: string, passphrase: string
 }
 
 export async function sign(value: string | object | any[], privateKeyObject: any) {
-  const data: string = stringify(value)
+  const data = stringify(value)
 
   const options: interfaces.signatureOptions = {
     message: openpgp.cleartext.fromText(data),
@@ -113,7 +113,7 @@ export async function isValidSignature(value: string | object | any[], signature
 
   const options: interfaces.verifySignatureOptions  = {
     message: openpgp.cleartext.fromText(message),
-    signature: openpgp.signature.readArmored(signature),
+    signature: await openpgp.signature.readArmored(signature),
     publicKeys: (await openpgp.key.readArmored(publicKey)).keys
   }
 

@@ -117,7 +117,7 @@
         const message = stringify(value);
         const options = {
             message: openpgp.cleartext.fromText(message),
-            signature: openpgp.signature.readArmored(signature),
+            signature: await openpgp.signature.readArmored(signature),
             publicKeys: (await openpgp.key.readArmored(publicKey)).keys
         };
         const verified = await openpgp.verify(options);
