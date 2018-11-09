@@ -116,13 +116,12 @@
         // SSDB record signatures
         const message = stringify(value);
         const options = {
-            message: openpgp.message.fromText(message),
+            message: openpgp.cleartext.fromText(message),
             signature: openpgp.signature.readArmored(signature),
-            publicKeys: openpgp.key.readArmored(publicKey).keys
+            publicKeys: (await openpgp.key.readArmored(publicKey)).keys
         };
         const verified = await openpgp.verify(options);
-        const valid = verified.signatures[0].valid;
-        return valid;
+        return verified.signatures[0].valid;
     }
     exports.isValidSignature = isValidSignature;
     function createProofOfSpace(seed, size) {

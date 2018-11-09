@@ -112,14 +112,13 @@ export async function isValidSignature(value: string | object | any[], signature
   const message = stringify(value)
 
   const options: interfaces.verifySignatureOptions  = {
-    message: openpgp.message.fromText(message),
+    message: openpgp.cleartext.fromText(message),
     signature: openpgp.signature.readArmored(signature),
-    publicKeys: openpgp.key.readArmored(publicKey).keys
+    publicKeys: (await openpgp.key.readArmored(publicKey)).keys
   }
 
   const verified: openpgp.VerifiedMessage = await openpgp.verify(options)
-  const valid: boolean = verified.signatures[0].valid
-  return valid
+  return verified.signatures[0].valid
 }
 
 export function createProofOfSpace(seed: string, size: number) {
