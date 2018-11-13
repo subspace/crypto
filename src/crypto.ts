@@ -161,7 +161,7 @@ export function isValidProofOfTime(seed: string, time: number) {
 }
 
 export async function isValidMessageSignature(message: any) {
-  let detachedMessage = { ...message }
+  let detachedMessage = JSON.parse(JSON.stringify(message))
   detachedMessage.signature = null
   return await isValidSignature(detachedMessage, message.signature, message.publicKey)
 }

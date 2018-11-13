@@ -161,7 +161,7 @@
     }
     exports.isValidProofOfTime = isValidProofOfTime;
     async function isValidMessageSignature(message) {
-        let detachedMessage = Object.assign({}, message);
+        let detachedMessage = JSON.parse(JSON.stringify(message));
         detachedMessage.signature = null;
         return await isValidSignature(detachedMessage, message.signature, message.publicKey);
     }
