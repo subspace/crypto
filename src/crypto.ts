@@ -9,11 +9,28 @@ export {Destination as rendezvousHashDestination, pickDestinations as rendezvous
 
 const BYTES_PER_HASH = 1000000    // one hash per MB of pledge for simple proof of space, 32 eventually
 
+export function constantTimeEqual<T extends string>(expected: T, test: T): boolean;
+export function constantTimeEqual<T extends Uint8Array>(expected: T, test: T): boolean;
+export function constantTimeEqual(expected: string | Uint8Array, test: typeof expected): boolean {
+  // @ts-ignore Bug in TypeScript: https://github.com/Microsoft/TypeScript/issues/14107
+  const expectedBuffer = Buffer.from(expected);
+  // @ts-ignore Bug in TypeScript: https://github.com/Microsoft/TypeScript/issues/14107
+  const testBuffer = Buffer.from(test);
+  if (expectedBuffer.length !== testBuffer.length) {
+    // If lengths are different - make fake comparison just to have constant time, since `crypto.timingSafeEqual` doesn't work with buffers of different length
+    return crypto.timingSafeEqual(
+      Buffer.from('0'.repeat(expected.length)),
+      Buffer.from('1'.repeat(expected.length)),
+    );
+  }
+  return crypto.timingSafeEqual(expectedBuffer, testBuffer);
+}
+
 
 // TODO
   // replace profile with profile object and type def
-  // replace value with record interfarce
-  // find or create type declerations for openpgp and aesjs
+  // replace value with record interface
+  // find or create type declarations for openpgp and aesjs
   // implement verifyValue() for SSDB records
   // pass in the seed values and passphrase for key generation
   // remove/replace PGP padding on keys and signatures
@@ -21,38 +38,41 @@ const BYTES_PER_HASH = 1000000    // one hash per MB of pledge for simple proof 
   // implement parsec consensus for node failures
   // use SSCL block hashes in place of time stamps
 
-export function getHash(value: string) {
+export function getHash<T extends string>(value: T): T;
+export function getHash<T extends Uint8Array>(value: T): T;
+export function getHash(value: string | Uint8Array): typeof value {
   // returns the sha256 hash of a string value
   const hasher = crypto.createHash('sha256')
   hasher.update(value)
-  const hash: string = hasher.digest('hex')
-  return hash
+  if (typeof value === 'string') {
+    return hasher.digest('hex')
+  }
+  return hasher.digest()
 }
 
 export function getHash64(value: string) {
   const key = 0xABCD
-  const eightByteHash = Buffer.from(XXH.h64(value, key).toString('16'), 'hex')
-  return eightByteHash
+  return Buffer.from(XXH.h64(value, key).toString('16'), 'hex')
 }
 
-export function isValidHash(hash: string, value: string) {
+export function isValidHash<T extends string>(hash: T, value: T): boolean;
+export function isValidHash<T extends Uint8Array>(hash: T, value: T): boolean;
+export function isValidHash(hash: string | Uint8Array, value: string | Uint8Array): boolean {
   // checks to ensure a supplied hash matches a value
-  const valid: boolean = hash === getHash(value)
-  return valid
+  // @ts-ignore Bug in TypeScript: https://github.com/Microsoft/TypeScript/issues/14107
+  return constantTimeEqual(hash, getHash(value))
 }
 
 export function getRandom() {
   // generates a random 32 byte symmetric password
-  const randomBytes: Buffer = crypto.randomBytes(32)
-  const randomString: string = randomBytes.toString('hex')
-  return randomString
+  const randomBytes = crypto.randomBytes(32)
+  return randomBytes.toString('hex')
 }
 
 export function read(buffer: Buffer) {
   // takes a hex buffer and returns the condensed human readable form
-  const hexString: string = buffer.toString('hex')
-  const readableString: string = hexString.substring(0,8).concat('...')
-  return readableString
+  const hexString = buffer.toString('hex')
+  return hexString.substring(0, 8).concat('...')
 }
 
 /**
@@ -64,8 +84,7 @@ export function stringify(value: any) {
 
 export function isDateWithinRange(date: number, range: number) {
   // checks to ensure a supplied unix timestamp is within a supplied range
-  const valid: boolean = Math.abs(Date.now() - date) <= range
-  return valid
+  return Math.abs(Date.now() - date) <= range
 }
 
 export async function generateKeys(name: string, email: string, passphrase: string) {
@@ -141,7 +160,7 @@ export function createProofOfSpace(seed: string, size: number) {
 
 export function isValidProofOfSpace(key: string, size: number, proofId: string) {
   // validates a mock proof of space
-  return proofId === createProofOfSpace(key, size).id
+  return constantTimeEqual(proofId, createProofOfSpace(key, size).id)
 }
 
 export function createProofOfTime(seed: string) {
