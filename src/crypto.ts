@@ -55,13 +55,11 @@ export function read(buffer: Buffer) {
   return readableString
 }
 
-export function stringify(value: string | object | any[]) {
-  // object and array can be of many types! just a generic encoding function
-  if (typeof value === 'object') {
-    if (Array.isArray(value)) value = value.toString()
-    else value = JSON.stringify(value)
-  }
-  return value
+/**
+ * @deprecated Use `JSON.stringify()` instead, this will be removed in future
+ */
+export function stringify(value: any) {
+  return JSON.stringify(value)
 }
 
 export function isDateWithinRange(date: number, range: number) {
@@ -91,7 +89,7 @@ export async function getPrivateKeyObject(privateKey: string, passphrase: string
 }
 
 export async function sign(value: string | object | any[], privateKeyObject: any) {
-  const data = stringify(value)
+  const data = JSON.stringify(value)
 
   const options: interfaces.signatureOptions = {
     message: openpgp.cleartext.fromText(data),
@@ -109,7 +107,7 @@ export async function isValidSignature(value: string | object | any[], signature
     // Join, Leave, and Failure proofs (LHT entries)
     // SSDB record signatures
 
-  const message = stringify(value)
+  const message = JSON.stringify(value)
 
   const options: interfaces.verifySignatureOptions  = {
     message: openpgp.cleartext.fromText(message),
@@ -142,12 +140,12 @@ export function createProofOfSpace(seed: string, size: number) {
 }
 
 export function isValidProofOfSpace(key: string, size: number, proofId: string) {
-  // validates a mock proof of space 
+  // validates a mock proof of space
   return proofId === createProofOfSpace(key, size).id
 }
 
 export function createProofOfTime(seed: string) {
-  // create a mock proof of time by converting a hex seed string into time in ms  
+  // create a mock proof of time by converting a hex seed string into time in ms
   let time = 0
   for (let char of seed) {
     time += parseInt(char, 16) + 1
