@@ -1,5 +1,4 @@
 import * as crypto from "./crypto"
-import * as interfaces from './interfaces'
 
 const value: string = 'hello subspace'
 const falseValue: string = 'herro rubrace'
@@ -30,7 +29,7 @@ test('getHash', () => {
 // test('getRandom', () => {
 //     expect(crypto.getRandom)
 //     // 32 bytes long
-//     // unique each time 
+//     // unique each time
 // })
 
 test('read', () => {
@@ -44,29 +43,12 @@ test('verifyHash', () => {
     expect(crypto.isValidHash(hash, falseValue)).toBe(false)
 })
 
-test('stringify', () => {
-  const stringInput: string = 'test'
-  const stringOutput: string = 'test'
-  expect(crypto.stringify(stringInput)).toBe(stringOutput)
-
-  const arrayInput: any[] = [1, 'abc', 'signature']
-  const arrayOutput: string = "1,abc,signature"
-  expect(crypto.stringify(arrayInput)).toBe(arrayOutput)
-
-  const objectInput: object = {
-    test: 'data',
-    some: [1, 2, 3]
-  }
-  const objectOutput: string = '{"test":"data","some":[1, 2, 3]}'
-  expect(crypto.stringify(arrayInput)).toBe(arrayOutput)
-})
-
 test('verifyDate', () => {
   const range = 600000
-  const testDate: number = Date.now() 
+  const testDate: number = Date.now()
   const validEarly: number = testDate - 599000
   expect(crypto.isDateWithinRange(validEarly, range)).toBe(true)
-  const validLate: number = testDate + 599000 
+  const validLate: number = testDate + 599000
   expect(crypto.isDateWithinRange(validLate, range)).toBe(true)
   const invalidEarly: number = testDate - 601000
   expect(crypto.isDateWithinRange(invalidEarly, range)).toBe(false)
@@ -75,7 +57,7 @@ test('verifyDate', () => {
 })
 
 // test('generateKeys',() => {
-  
+
 // })
 
 
