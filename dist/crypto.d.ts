@@ -2,12 +2,19 @@
 import * as interfaces from './interfaces';
 export { jumpConsistentHash } from '@subspace/jump-consistent-hash';
 export { Destination as rendezvousHashDestination, pickDestinations as rendezvousHashPickDestinations } from '@subspace/rendezvous-hash';
-export declare function getHash(value: string): string;
+export declare function constantTimeEqual<T extends string>(expected: T, test: T): boolean;
+export declare function constantTimeEqual<T extends Uint8Array>(expected: T, test: T): boolean;
+export declare function getHash<T extends string>(value: T): T;
+export declare function getHash<T extends Uint8Array>(value: T): T;
 export declare function getHash64(value: string): Buffer;
-export declare function isValidHash(hash: string, value: string): boolean;
+export declare function isValidHash<T extends string>(hash: T, value: T): boolean;
+export declare function isValidHash<T extends Uint8Array>(hash: T, value: T): boolean;
 export declare function getRandom(): string;
 export declare function read(buffer: Buffer): string;
-export declare function stringify(value: string | object | any[]): string;
+/**
+ * @deprecated Use `JSON.stringify()` instead, this will be removed in future
+ */
+export declare function stringify(value: any): string;
 export declare function isDateWithinRange(date: number, range: number): boolean;
 export declare function generateKeys(name: string, email: string, passphrase: string): Promise<any>;
 export declare function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<any>;

@@ -32,7 +32,7 @@
     // test('getRandom', () => {
     //     expect(crypto.getRandom)
     //     // 32 bytes long
-    //     // unique each time 
+    //     // unique each time
     // })
     test('read', () => {
         const buffer = Buffer.from(hash, 'hex');
@@ -42,20 +42,6 @@
     test('verifyHash', () => {
         expect(crypto.isValidHash(hash, value)).toBe(true);
         expect(crypto.isValidHash(hash, falseValue)).toBe(false);
-    });
-    test('stringify', () => {
-        const stringInput = 'test';
-        const stringOutput = 'test';
-        expect(crypto.stringify(stringInput)).toBe(stringOutput);
-        const arrayInput = [1, 'abc', 'signature'];
-        const arrayOutput = "1,abc,signature";
-        expect(crypto.stringify(arrayInput)).toBe(arrayOutput);
-        const objectInput = {
-            test: 'data',
-            some: [1, 2, 3]
-        };
-        const objectOutput = '{"test":"data","some":[1, 2, 3]}';
-        expect(crypto.stringify(arrayInput)).toBe(arrayOutput);
     });
     test('verifyDate', () => {
         const range = 600000;

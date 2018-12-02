@@ -19,65 +19,61 @@
     exports.rendezvousHashDestination = rendezvous_hash_1.Destination;
     exports.rendezvousHashPickDestinations = rendezvous_hash_1.pickDestinations;
     const BYTES_PER_HASH = 1000000; // one hash per MB of pledge for simple proof of space, 32 eventually
-    // TODO
-    // replace profile with profile object and type def
-    // replace value with record interfarce
-    // find or create type declerations for openpgp and aesjs
-    // implement verifyValue() for SSDB records
-    // pass in the seed values and passphrase for key generation
-    // remove/replace PGP padding on keys and signatures
-    // replace AES-JS with native crypto or openpgp symmetric encryption
-    // implement parsec consensus for node failures
-    // use SSCL block hashes in place of time stamps
+    function constantTimeEqual(expected, test) {
+        // @ts-ignore Bug in TypeScript: https://github.com/Microsoft/TypeScript/issues/14107
+        const expectedBuffer = Buffer.from(expected);
+        // @ts-ignore Bug in TypeScript: https://github.com/Microsoft/TypeScript/issues/14107
+        const testBuffer = Buffer.from(test);
+        if (expectedBuffer.length !== testBuffer.length) {
+            // If lengths are different - make fake comparison just to have constant time, since `crypto.timingSafeEqual` doesn't work with buffers of different length
+            return crypto.timingSafeEqual(Buffer.from('0'.repeat(expected.length)), Buffer.from('1'.repeat(expected.length)));
+        }
+        return crypto.timingSafeEqual(expectedBuffer, testBuffer);
+    }
+    exports.constantTimeEqual = constantTimeEqual;
     function getHash(value) {
         // returns the sha256 hash of a string value
         const hasher = crypto.createHash('sha256');
         hasher.update(value);
-        const hash = hasher.digest('hex');
-        return hash;
+        if (typeof value === 'string') {
+            return hasher.digest('hex');
+        }
+        return hasher.digest();
     }
     exports.getHash = getHash;
     function getHash64(value) {
         const key = 0xABCD;
-        const eightByteHash = Buffer.from(XXH.h64(value, key).toString('16'), 'hex');
-        return eightByteHash;
+        return Buffer.from(XXH.h64(value, key).toString('16'), 'hex');
     }
     exports.getHash64 = getHash64;
     function isValidHash(hash, value) {
         // checks to ensure a supplied hash matches a value
-        const valid = hash === getHash(value);
-        return valid;
+        // @ts-ignore Bug in TypeScript: https://github.com/Microsoft/TypeScript/issues/14107
+        return constantTimeEqual(hash, getHash(value));
     }
     exports.isValidHash = isValidHash;
     function getRandom() {
         // generates a random 32 byte symmetric password
         const randomBytes = crypto.randomBytes(32);
-        const randomString = randomBytes.toString('hex');
-        return randomString;
+        return randomBytes.toString('hex');
     }
     exports.getRandom = getRandom;
     function read(buffer) {
         // takes a hex buffer and returns the condensed human readable form
         const hexString = buffer.toString('hex');
-        const readableString = hexString.substring(0, 8).concat('...');
-        return readableString;
+        return hexString.substring(0, 8).concat('...');
     }
     exports.read = read;
+    /**
+     * @deprecated Use `JSON.stringify()` instead, this will be removed in future
+     */
     function stringify(value) {
-        // object and array can be of many types! just a generic encoding function
-        if (typeof value === 'object') {
-            if (Array.isArray(value))
-                value = value.toString();
-            else
-                value = JSON.stringify(value);
-        }
-        return value;
+        return JSON.stringify(value);
     }
     exports.stringify = stringify;
     function isDateWithinRange(date, range) {
         // checks to ensure a supplied unix timestamp is within a supplied range
-        const valid = Math.abs(Date.now() - date) <= range;
-        return valid;
+        return Math.abs(Date.now() - date) <= range;
     }
     exports.isDateWithinRange = isDateWithinRange;
     async function generateKeys(name, email, passphrase) {
@@ -99,7 +95,7 @@
     }
     exports.getPrivateKeyObject = getPrivateKeyObject;
     async function sign(value, privateKeyObject) {
-        const data = stringify(value);
+        const data = JSON.stringify(value);
         const options = {
             message: openpgp.cleartext.fromText(data),
             privateKeys: [privateKeyObject],
@@ -114,7 +110,7 @@
         // RPC message signatures
         // Join, Leave, and Failure proofs (LHT entries)
         // SSDB record signatures
-        const message = stringify(value);
+        const message = JSON.stringify(value);
         const options = {
             message: openpgp.cleartext.fromText(message),
             signature: await openpgp.signature.readArmored(signature),
@@ -142,12 +138,12 @@
     }
     exports.createProofOfSpace = createProofOfSpace;
     function isValidProofOfSpace(key, size, proofId) {
-        // validates a mock proof of space 
-        return proofId === createProofOfSpace(key, size).id;
+        // validates a mock proof of space
+        return constantTimeEqual(proofId, createProofOfSpace(key, size).id);
     }
     exports.isValidProofOfSpace = isValidProofOfSpace;
     function createProofOfTime(seed) {
-        // create a mock proof of time by converting a hex seed string into time in ms  
+        // create a mock proof of time by converting a hex seed string into time in ms
         let time = 0;
         for (let char of seed) {
             time += parseInt(char, 16) + 1;
