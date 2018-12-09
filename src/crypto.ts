@@ -39,7 +39,7 @@ export function constantTimeEqual(expected: string | Uint8Array, test: typeof ex
   // use SSCL block hashes in place of time stamps
 
 export function getHash(value: string): string;
-export function getHash<Uint8Array>(value: Uint8Array): Uint8Array;
+export function getHash(value: Uint8Array): Uint8Array;
 export function getHash(value: string | Uint8Array): typeof value {
   // returns the sha256 hash of a string value
   const hasher = crypto.createHash('sha256')
