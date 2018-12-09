@@ -118,7 +118,7 @@ export async function sign(value: string | Uint8Array | object | any[], privateK
     }
 
     const signed: interfaces.signatureValue = await openpgp.sign(options)
-    return Buffer.from(signed.signature, 'hex')
+    return Buffer.from(signed.signature)
   } else {
     const data = JSON.stringify(value)
 
@@ -143,8 +143,8 @@ export async function isValidSignature(value: string | Uint8Array | object | any
   if (value instanceof Uint8Array && signature instanceof Uint8Array && publicKey instanceof Uint8Array) {
     const options: interfaces.verifySignatureOptions  = {
       message: openpgp.message.fromBinary(value),
-      signature: await openpgp.signature.readArmored(Buffer.from(signature).toString('hex')),
-      publicKeys: (await openpgp.key.readArmored(Buffer.from(publicKey).toString('hex'))).keys
+      signature: await openpgp.signature.readArmored(Buffer.from(signature).toString()),
+      publicKeys: (await openpgp.key.readArmored(Buffer.from(publicKey).toString())).keys
     }
 
     const verified: openpgp.VerifiedMessage = await openpgp.verify(options)

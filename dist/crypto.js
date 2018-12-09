@@ -102,7 +102,7 @@
                 detached: true
             };
             const signed = await openpgp.sign(options);
-            return Buffer.from(signed.signature, 'hex');
+            return Buffer.from(signed.signature);
         }
         else {
             const data = JSON.stringify(value);
@@ -124,8 +124,8 @@
         if (value instanceof Uint8Array && signature instanceof Uint8Array && publicKey instanceof Uint8Array) {
             const options = {
                 message: openpgp.message.fromBinary(value),
-                signature: await openpgp.signature.readArmored(Buffer.from(signature).toString('hex')),
-                publicKeys: (await openpgp.key.readArmored(Buffer.from(publicKey).toString('hex'))).keys
+                signature: await openpgp.signature.readArmored(Buffer.from(signature).toString()),
+                publicKeys: (await openpgp.key.readArmored(Buffer.from(publicKey).toString())).keys
             };
             const verified = await openpgp.verify(options);
             return verified.signatures[0].valid;
