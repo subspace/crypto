@@ -4,8 +4,8 @@ export { jumpConsistentHash } from '@subspace/jump-consistent-hash';
 export { Destination as rendezvousHashDestination, pickDestinations as rendezvousHashPickDestinations } from '@subspace/rendezvous-hash';
 export declare function constantTimeEqual<T extends string>(expected: T, test: T): boolean;
 export declare function constantTimeEqual<T extends Uint8Array>(expected: T, test: T): boolean;
-export declare function getHash<T extends string>(value: T): T;
-export declare function getHash<T extends Uint8Array>(value: T): T;
+export declare function getHash(value: string): string;
+export declare function getHash<Uint8Array>(value: Uint8Array): Uint8Array;
 export declare function getHash64(value: string): Buffer;
 export declare function isValidHash<T extends string>(hash: T, value: T): boolean;
 export declare function isValidHash<T extends Uint8Array>(hash: T, value: T): boolean;
@@ -21,6 +21,7 @@ export declare function getPrivateKeyObject(privateKey: string, passphrase: stri
 export declare function sign(value: string | object | any[], privateKeyObject: any): Promise<string>;
 export declare function sign(value: Uint8Array, privateKeyObject: any): Promise<Uint8Array>;
 export declare function isValidSignature(value: string | object | any[], signature: string, publicKey: string): Promise<boolean>;
+export declare function isValidSignature(value: Uint8Array, signature: Uint8Array, publicKey: Uint8Array): Promise<boolean>;
 export declare function createProofOfSpace(seed: string, size: number): {
     id: string;
     createdAt: number;

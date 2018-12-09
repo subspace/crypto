@@ -121,14 +121,25 @@
         // RPC message signatures
         // Join, Leave, and Failure proofs (LHT entries)
         // SSDB record signatures
-        const message = JSON.stringify(value);
-        const options = {
-            message: openpgp.cleartext.fromText(message),
-            signature: await openpgp.signature.readArmored(signature),
-            publicKeys: (await openpgp.key.readArmored(publicKey)).keys
-        };
-        const verified = await openpgp.verify(options);
-        return verified.signatures[0].valid;
+        if (value instanceof Uint8Array && signature instanceof Uint8Array && publicKey instanceof Uint8Array) {
+            const options = {
+                message: openpgp.message.fromBinary(value),
+                signature: await openpgp.signature.readArmored(Buffer.from(signature).toString('hex')),
+                publicKeys: (await openpgp.key.readArmored(Buffer.from(publicKey).toString('hex'))).keys
+            };
+            const verified = await openpgp.verify(options);
+            return verified.signatures[0].valid;
+        }
+        else {
+            const message = JSON.stringify(value);
+            const options = {
+                message: openpgp.cleartext.fromText(message),
+                signature: await openpgp.signature.readArmored(signature),
+                publicKeys: (await openpgp.key.readArmored(publicKey)).keys
+            };
+            const verified = await openpgp.verify(options);
+            return verified.signatures[0].valid;
+        }
     }
     exports.isValidSignature = isValidSignature;
     function createProofOfSpace(seed, size) {

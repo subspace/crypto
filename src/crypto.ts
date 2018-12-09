@@ -38,8 +38,8 @@ export function constantTimeEqual(expected: string | Uint8Array, test: typeof ex
   // implement parsec consensus for node failures
   // use SSCL block hashes in place of time stamps
 
-export function getHash<T extends string>(value: T): T;
-export function getHash<T extends Uint8Array>(value: T): T;
+export function getHash(value: string): string;
+export function getHash<Uint8Array>(value: Uint8Array): Uint8Array;
 export function getHash(value: string | Uint8Array): typeof value {
   // returns the sha256 hash of a string value
   const hasher = crypto.createHash('sha256')
@@ -133,22 +133,34 @@ export async function sign(value: string | Uint8Array | object | any[], privateK
   }
 }
 
-export async function isValidSignature(value: string | object | any[], signature: string, publicKey: string) {
+export async function isValidSignature(value: string | object | any[], signature: string, publicKey: string): Promise<boolean>;
+export async function isValidSignature(value: Uint8Array, signature: Uint8Array, publicKey: Uint8Array): Promise<boolean>;
+export async function isValidSignature(value: string | Uint8Array | object | any[], signature: string | Uint8Array, publicKey: string | Uint8Array): Promise<boolean> {
   // verifies a detached signature on a message given a public key for
     // RPC message signatures
     // Join, Leave, and Failure proofs (LHT entries)
     // SSDB record signatures
+  if (value instanceof Uint8Array && signature instanceof Uint8Array && publicKey instanceof Uint8Array) {
+    const options: interfaces.verifySignatureOptions  = {
+      message: openpgp.message.fromBinary(value),
+      signature: await openpgp.signature.readArmored(Buffer.from(signature).toString('hex')),
+      publicKeys: (await openpgp.key.readArmored(Buffer.from(publicKey).toString('hex'))).keys
+    }
 
-  const message = JSON.stringify(value)
+    const verified: openpgp.VerifiedMessage = await openpgp.verify(options)
+    return verified.signatures[0].valid
+  } else {
+    const message = JSON.stringify(value)
 
-  const options: interfaces.verifySignatureOptions  = {
-    message: openpgp.cleartext.fromText(message),
-    signature: await openpgp.signature.readArmored(signature),
-    publicKeys: (await openpgp.key.readArmored(publicKey)).keys
+    const options: interfaces.verifySignatureOptions  = {
+      message: openpgp.cleartext.fromText(message),
+      signature: await openpgp.signature.readArmored(signature),
+      publicKeys: (await openpgp.key.readArmored(publicKey)).keys
+    }
+
+    const verified: openpgp.VerifiedMessage = await openpgp.verify(options)
+    return verified.signatures[0].valid
   }
-
-  const verified: openpgp.VerifiedMessage = await openpgp.verify(options)
-  return verified.signatures[0].valid
 }
 
 export function createProofOfSpace(seed: string, size: number) {
