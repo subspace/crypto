@@ -107,17 +107,30 @@ export async function getPrivateKeyObject(privateKey: string, passphrase: string
   return privateKeyObject
 }
 
-export async function sign(value: string | object | any[], privateKeyObject: any) {
-  const data = JSON.stringify(value)
+export async function sign(value: string | object | any[], privateKeyObject: any): Promise<string>;
+export async function sign(value: Uint8Array, privateKeyObject: any): Promise<Uint8Array>;
+export async function sign(value: string | Uint8Array | object | any[], privateKeyObject: any): Promise<string | Uint8Array> {
+  if (value instanceof Uint8Array) {
+    const options: interfaces.signatureOptions = {
+      message: openpgp.message.fromBinary(value),
+      privateKeys: [privateKeyObject],
+      detached: true
+    }
 
-  const options: interfaces.signatureOptions = {
-    message: openpgp.cleartext.fromText(data),
-    privateKeys: [privateKeyObject],
-    detached: true
+    const signed: interfaces.signatureValue = await openpgp.sign(options)
+    return Buffer.from(signed.signature, 'hex')
+  } else {
+    const data = JSON.stringify(value)
+
+    const options: interfaces.signatureOptions = {
+      message: openpgp.cleartext.fromText(data),
+      privateKeys: [privateKeyObject],
+      detached: true
+    }
+
+    const signed: interfaces.signatureValue = await openpgp.sign(options)
+    return signed.signature
   }
-
-  const signed: interfaces.signatureValue = await openpgp.sign(options)
-  return signed.signature
 }
 
 export async function isValidSignature(value: string | object | any[], signature: string, publicKey: string) {
