@@ -95,14 +95,25 @@
     }
     exports.getPrivateKeyObject = getPrivateKeyObject;
     async function sign(value, privateKeyObject) {
-        const data = JSON.stringify(value);
-        const options = {
-            message: openpgp.cleartext.fromText(data),
-            privateKeys: [privateKeyObject],
-            detached: true
-        };
-        const signed = await openpgp.sign(options);
-        return signed.signature;
+        if (value instanceof Uint8Array) {
+            const options = {
+                message: openpgp.message.fromBinary(value),
+                privateKeys: [privateKeyObject],
+                detached: true
+            };
+            const signed = await openpgp.sign(options);
+            return Buffer.from(signed.signature, 'hex');
+        }
+        else {
+            const data = JSON.stringify(value);
+            const options = {
+                message: openpgp.cleartext.fromText(data),
+                privateKeys: [privateKeyObject],
+                detached: true
+            };
+            const signed = await openpgp.sign(options);
+            return signed.signature;
+        }
     }
     exports.sign = sign;
     async function isValidSignature(value, signature, publicKey) {

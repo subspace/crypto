@@ -19,6 +19,7 @@ export declare function isDateWithinRange(date: number, range: number): boolean;
 export declare function generateKeys(name: string, email: string, passphrase: string): Promise<any>;
 export declare function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<any>;
 export declare function sign(value: string | object | any[], privateKeyObject: any): Promise<string>;
+export declare function sign(value: Uint8Array, privateKeyObject: any): Promise<Uint8Array>;
 export declare function isValidSignature(value: string | object | any[], signature: string, publicKey: string): Promise<boolean>;
 export declare function createProofOfSpace(seed: string, size: number): {
     id: string;
