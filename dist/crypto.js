@@ -95,14 +95,25 @@
     }
     exports.getPrivateKeyObject = getPrivateKeyObject;
     async function sign(value, privateKeyObject) {
-        const data = JSON.stringify(value);
-        const options = {
-            message: openpgp.cleartext.fromText(data),
-            privateKeys: [privateKeyObject],
-            detached: true
-        };
-        const signed = await openpgp.sign(options);
-        return signed.signature;
+        if (value instanceof Uint8Array) {
+            const options = {
+                message: openpgp.message.fromBinary(value),
+                privateKeys: [privateKeyObject],
+                detached: true
+            };
+            const signed = await openpgp.sign(options);
+            return Buffer.from(signed.signature);
+        }
+        else {
+            const data = JSON.stringify(value);
+            const options = {
+                message: openpgp.cleartext.fromText(data),
+                privateKeys: [privateKeyObject],
+                detached: true
+            };
+            const signed = await openpgp.sign(options);
+            return signed.signature;
+        }
     }
     exports.sign = sign;
     async function isValidSignature(value, signature, publicKey) {
@@ -110,14 +121,25 @@
         // RPC message signatures
         // Join, Leave, and Failure proofs (LHT entries)
         // SSDB record signatures
-        const message = JSON.stringify(value);
-        const options = {
-            message: openpgp.cleartext.fromText(message),
-            signature: await openpgp.signature.readArmored(signature),
-            publicKeys: (await openpgp.key.readArmored(publicKey)).keys
-        };
-        const verified = await openpgp.verify(options);
-        return verified.signatures[0].valid;
+        if (value instanceof Uint8Array && signature instanceof Uint8Array && publicKey instanceof Uint8Array) {
+            const options = {
+                message: openpgp.message.fromBinary(value),
+                signature: await openpgp.signature.readArmored(Buffer.from(signature).toString()),
+                publicKeys: (await openpgp.key.readArmored(Buffer.from(publicKey).toString())).keys
+            };
+            const verified = await openpgp.verify(options);
+            return verified.signatures[0].valid;
+        }
+        else {
+            const message = JSON.stringify(value);
+            const options = {
+                message: openpgp.cleartext.fromText(message),
+                signature: await openpgp.signature.readArmored(signature),
+                publicKeys: (await openpgp.key.readArmored(publicKey)).keys
+            };
+            const verified = await openpgp.verify(options);
+            return verified.signatures[0].valid;
+        }
     }
     exports.isValidSignature = isValidSignature;
     function createProofOfSpace(seed, size) {
