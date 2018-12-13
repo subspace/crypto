@@ -5,7 +5,7 @@ export { Destination as rendezvousHashDestination, pickDestinations as rendezvou
 export declare function constantTimeEqual<T extends string>(expected: T, test: T): boolean;
 export declare function constantTimeEqual<T extends Uint8Array>(expected: T, test: T): boolean;
 export declare function getHash(value: string): string;
-export declare function getHash<Uint8Array>(value: Uint8Array): Uint8Array;
+export declare function getHash(value: Uint8Array): Uint8Array;
 export declare function getHash64(value: string): Buffer;
 export declare function isValidHash<T extends string>(hash: T, value: T): boolean;
 export declare function isValidHash<T extends Uint8Array>(hash: T, value: T): boolean;
