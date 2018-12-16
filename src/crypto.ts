@@ -56,9 +56,9 @@ export function getHash64(value: string) {
   return Buffer.from(XXH.h64(value, key).toString('16'), 'hex')
 }
 
-export function isValidHash<T extends string>(hash: T, value: T): boolean;
-export function isValidHash<T extends Uint8Array>(hash: T, value: T): boolean;
-export function isValidHash(hash: string | Uint8Array, value: string | Uint8Array): boolean {
+export function isValidHash(hash: string, value: string): boolean;
+export function isValidHash(hash: Uint8Array, value: Uint8Array): boolean;
+export function isValidHash(hash: string | Uint8Array, value: typeof hash): boolean {
   // checks to ensure a supplied hash matches a value
   // @ts-ignore Bug in TypeScript: https://github.com/Microsoft/TypeScript/issues/14107
   return constantTimeEqual(hash, getHash(value))
