@@ -2,8 +2,8 @@
 import * as interfaces from './interfaces';
 export { jumpConsistentHash } from '@subspace/jump-consistent-hash';
 export { Destination as rendezvousHashDestination, pickDestinations as rendezvousHashPickDestinations } from '@subspace/rendezvous-hash';
-export declare function constantTimeEqual<T extends string>(expected: T, test: T): boolean;
-export declare function constantTimeEqual<T extends Uint8Array>(expected: T, test: T): boolean;
+export declare function constantTimeEqual(expected: string, test: string): boolean;
+export declare function constantTimeEqual(expected: Uint8Array, test: Uint8Array): boolean;
 export declare function getHash(value: string): string;
 export declare function getHash(value: Uint8Array): Uint8Array;
 export declare function getHash64(value: string): Buffer;

@@ -1,4 +1,5 @@
 import * as crypto from 'crypto'
+import timingSafeEqual = require('timing-safe-equal')
 import * as interfaces from './interfaces'
 const openpgp = require('openpgp')
 const aesjs = require('aes-js')
@@ -9,8 +10,8 @@ export {Destination as rendezvousHashDestination, pickDestinations as rendezvous
 
 const BYTES_PER_HASH = 1000000    // one hash per MB of pledge for simple proof of space, 32 eventually
 
-export function constantTimeEqual<T extends string>(expected: T, test: T): boolean;
-export function constantTimeEqual<T extends Uint8Array>(expected: T, test: T): boolean;
+export function constantTimeEqual(expected: string, test: string): boolean;
+export function constantTimeEqual(expected: Uint8Array, test: Uint8Array): boolean;
 export function constantTimeEqual(expected: string | Uint8Array, test: typeof expected): boolean {
   // @ts-ignore Bug in TypeScript: https://github.com/Microsoft/TypeScript/issues/14107
   const expectedBuffer = Buffer.from(expected);
@@ -18,12 +19,12 @@ export function constantTimeEqual(expected: string | Uint8Array, test: typeof ex
   const testBuffer = Buffer.from(test);
   if (expectedBuffer.length !== testBuffer.length) {
     // If lengths are different - make fake comparison just to have constant time, since `crypto.timingSafeEqual` doesn't work with buffers of different length
-    return crypto.timingSafeEqual(
+    return timingSafeEqual(
       Buffer.from('0'.repeat(expected.length)),
       Buffer.from('1'.repeat(expected.length)),
     );
   }
-  return crypto.timingSafeEqual(expectedBuffer, testBuffer);
+  return timingSafeEqual(expectedBuffer, testBuffer);
 }
 
 

@@ -4,12 +4,13 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "crypto", "@subspace/jump-consistent-hash", "@subspace/rendezvous-hash"], factory);
+        define(["require", "exports", "crypto", "timing-safe-equal", "@subspace/jump-consistent-hash", "@subspace/rendezvous-hash"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const crypto = require("crypto");
+    const timingSafeEqual = require("timing-safe-equal");
     const openpgp = require('openpgp');
     const aesjs = require('aes-js');
     const XXH = require('xxhashjs');
@@ -26,9 +27,9 @@
         const testBuffer = Buffer.from(test);
         if (expectedBuffer.length !== testBuffer.length) {
             // If lengths are different - make fake comparison just to have constant time, since `crypto.timingSafeEqual` doesn't work with buffers of different length
-            return crypto.timingSafeEqual(Buffer.from('0'.repeat(expected.length)), Buffer.from('1'.repeat(expected.length)));
+            return timingSafeEqual(Buffer.from('0'.repeat(expected.length)), Buffer.from('1'.repeat(expected.length)));
         }
-        return crypto.timingSafeEqual(expectedBuffer, testBuffer);
+        return timingSafeEqual(expectedBuffer, testBuffer);
     }
     exports.constantTimeEqual = constantTimeEqual;
     function getHash(value) {
