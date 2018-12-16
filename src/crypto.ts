@@ -1,7 +1,7 @@
 import * as crypto from 'crypto'
 import timingSafeEqual = require('timing-safe-equal')
 import * as interfaces from './interfaces'
-const openpgp = require('openpgp')
+import * as openpgp from 'openpgp'
 const aesjs = require('aes-js')
 const XXH = require('xxhashjs')
 
@@ -90,7 +90,7 @@ export function isDateWithinRange(date: number, range: number) {
 
 export async function generateKeys(name: string, email: string, passphrase: string) {
 
-  const options: interfaces.optionsObject = {
+  const options = {
     userIds: [{
       name: name,
       email: email
@@ -110,26 +110,27 @@ export async function getPrivateKeyObject(privateKey: string, passphrase: string
 
 export async function sign(value: string | object | any[], privateKeyObject: any): Promise<string>;
 export async function sign(value: Uint8Array, privateKeyObject: any): Promise<Uint8Array>;
-export async function sign(value: string | Uint8Array | object | any[], privateKeyObject: any): Promise<string | Uint8Array> {
+export async function sign(value: string | Uint8Array | object | any[], privateKeyObject: openpgp.key.Key): Promise<string | Uint8Array> {
   if (value instanceof Uint8Array) {
-    const options: interfaces.signatureOptions = {
+    const options = {
+      // @ts-ignore Incorrect type information in the library, should be Uint8Array
       message: openpgp.message.fromBinary(value),
       privateKeys: [privateKeyObject],
       detached: true
     }
 
-    const signed: interfaces.signatureValue = await openpgp.sign(options)
+    const signed = await openpgp.sign(options)
     return Buffer.from(signed.signature)
   } else {
     const data = JSON.stringify(value)
 
-    const options: interfaces.signatureOptions = {
+    const options = {
       message: openpgp.cleartext.fromText(data),
       privateKeys: [privateKeyObject],
       detached: true
     }
 
-    const signed: interfaces.signatureValue = await openpgp.sign(options)
+    const signed = await openpgp.sign(options)
     return signed.signature
   }
 }
@@ -142,24 +143,24 @@ export async function isValidSignature(value: string | Uint8Array | object | any
     // Join, Leave, and Failure proofs (LHT entries)
     // SSDB record signatures
   if (value instanceof Uint8Array && signature instanceof Uint8Array && publicKey instanceof Uint8Array) {
-    const options: interfaces.verifySignatureOptions  = {
+    const options  = {
       message: openpgp.message.fromBinary(value),
       signature: await openpgp.signature.readArmored(Buffer.from(signature).toString()),
       publicKeys: (await openpgp.key.readArmored(Buffer.from(publicKey).toString())).keys
     }
 
-    const verified: openpgp.VerifiedMessage = await openpgp.verify(options)
+    const verified = await openpgp.verify(options)
     return verified.signatures[0].valid
   } else {
     const message = JSON.stringify(value)
 
-    const options: interfaces.verifySignatureOptions  = {
+    const options  = {
       message: openpgp.cleartext.fromText(message),
-      signature: await openpgp.signature.readArmored(signature),
-      publicKeys: (await openpgp.key.readArmored(publicKey)).keys
+      signature: await openpgp.signature.readArmored(<string>signature),
+      publicKeys: (await openpgp.key.readArmored(<string>publicKey)).keys
     }
 
-    const verified: openpgp.VerifiedMessage = await openpgp.verify(options)
+    const verified = await openpgp.verify(options)
     return verified.signatures[0].valid
   }
 }
@@ -213,7 +214,7 @@ export async function createJoinProof(profile: any) {
   // how would you import the profile interface from @subspace/profile?
   // creates a signed proof from a host node, showing they have joined the LHT
 
-  const data: any[] = [
+  const data = [
     profile.hexId,
     profile.publicKey,
     Date.now()
@@ -265,7 +266,7 @@ export async function isValidJoinProof(data: any[]) {
 export async function createLeaveProof(profile: any) {
   // allows a peer to announce they have left the network as part of a graceful shutdown
 
-  const data: any[] = [
+  const data = [
     profile.hexId,
     Date.now()
   ]
@@ -327,24 +328,24 @@ export async function isValidFailureProof(data: any[], publicKey: string) {
 
 export async function encryptAssymetric(value: string, publicKey: string) {
   // encrypt a record symmetric key or record private key with a profile private key
-  const options: interfaces.encryptionOptions = {
-    data: openpgp.message.fromText(value),
+  const options = {
+    message: openpgp.message.fromText(value),
     publicKeys: (await openpgp.key.readArmored(publicKey)).keys
   }
 
-  const cipherText: interfaces.encryptedValueObject = await openpgp.encrypt(options)
+  const cipherText = await openpgp.encrypt(options)
   return cipherText.data
 }
 
-export async function decryptAssymetric(value: string, privateKeyObject: object) {
+export async function decryptAssymetric(value: string, privateKeyObject: openpgp.key.Key) {
   // decrypt a symmetric key with a private key
 
-  const options: interfaces.decryptionOptions = {
-    message: openpgp.message.readArmored(value),
+  const options = {
+    message: await openpgp.message.readArmored(value),
     privateKeys: [privateKeyObject]
   }
 
-  const plainText: interfaces.decrpytedValueObject = await openpgp.decrypt(options)
+  const plainText = await openpgp.decrypt(options)
   return plainText.data
 }
 
