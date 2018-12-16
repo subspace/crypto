@@ -83,12 +83,12 @@ export function stringify(value: any) {
   return JSON.stringify(value)
 }
 
-export function isDateWithinRange(date: number, range: number) {
+export function isDateWithinRange(date: number, range: number): boolean {
   // checks to ensure a supplied unix timestamp is within a supplied range
   return Math.abs(Date.now() - date) <= range
 }
 
-export async function generateKeys(name: string, email: string, passphrase: string) {
+export async function generateKeys(name: string, email: string, passphrase: string): Promise<openpgp.KeyPair> {
 
   const options = {
     userIds: [{
@@ -102,7 +102,7 @@ export async function generateKeys(name: string, email: string, passphrase: stri
   return await openpgp.generateKey(options)
 }
 
-export async function getPrivateKeyObject(privateKey: string, passphrase: string) {
+export async function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<openpgp.key.Key> {
   const privateKeyObject = (await openpgp.key.readArmored(privateKey)).keys[0]
   await privateKeyObject.decrypt(passphrase)
   return privateKeyObject
@@ -220,7 +220,7 @@ export async function createJoinProof(profile: any) {
     Date.now()
   ]
 
-  const signature: string = await sign(data, profile.privateKeyObject )
+  const signature = await sign(data, profile.privateKeyObject )
   data.push(signature)
   return data
 }
@@ -326,7 +326,7 @@ export async function isValidFailureProof(data: any[], publicKey: string) {
   // validates the message and updates the tally in members
 }
 
-export async function encryptAssymetric(value: string, publicKey: string) {
+export async function encryptAssymetric(value: string, publicKey: string): Promise<string> {
   // encrypt a record symmetric key or record private key with a profile private key
   const options = {
     message: openpgp.message.fromText(value),
@@ -337,7 +337,7 @@ export async function encryptAssymetric(value: string, publicKey: string) {
   return cipherText.data
 }
 
-export async function decryptAssymetric(value: string, privateKeyObject: openpgp.key.Key) {
+export async function decryptAssymetric(value: string, privateKeyObject: openpgp.key.Key): Promise<Uint8Array | string> {
   // decrypt a symmetric key with a private key
 
   const options = {
