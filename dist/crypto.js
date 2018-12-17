@@ -4,14 +4,14 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "crypto", "timing-safe-equal", "@subspace/jump-consistent-hash", "@subspace/rendezvous-hash"], factory);
+        define(["require", "exports", "crypto", "timing-safe-equal", "openpgp", "@subspace/jump-consistent-hash", "@subspace/rendezvous-hash"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const crypto = require("crypto");
     const timingSafeEqual = require("timing-safe-equal");
-    const openpgp = require('openpgp');
+    const openpgp = require("openpgp");
     const aesjs = require('aes-js');
     const XXH = require('xxhashjs');
     var jump_consistent_hash_1 = require("@subspace/jump-consistent-hash");
@@ -98,6 +98,7 @@
     async function sign(value, privateKeyObject) {
         if (value instanceof Uint8Array) {
             const options = {
+                // @ts-ignore Incorrect type information in the library, should be Uint8Array
                 message: openpgp.message.fromBinary(value),
                 privateKeys: [privateKeyObject],
                 detached: true
@@ -287,7 +288,7 @@
     async function encryptAssymetric(value, publicKey) {
         // encrypt a record symmetric key or record private key with a profile private key
         const options = {
-            data: openpgp.message.fromText(value),
+            message: openpgp.message.fromText(value),
             publicKeys: (await openpgp.key.readArmored(publicKey)).keys
         };
         const cipherText = await openpgp.encrypt(options);
@@ -297,7 +298,7 @@
     async function decryptAssymetric(value, privateKeyObject) {
         // decrypt a symmetric key with a private key
         const options = {
-            message: openpgp.message.readArmored(value),
+            message: await openpgp.message.readArmored(value),
             privateKeys: [privateKeyObject]
         };
         const plainText = await openpgp.decrypt(options);

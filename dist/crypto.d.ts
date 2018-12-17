@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import * as interfaces from './interfaces';
+import * as openpgp from 'openpgp';
 export { jumpConsistentHash } from '@subspace/jump-consistent-hash';
 export { Destination as rendezvousHashDestination, pickDestinations as rendezvousHashPickDestinations } from '@subspace/rendezvous-hash';
 export declare function constantTimeEqual(expected: string, test: string): boolean;
@@ -16,8 +17,8 @@ export declare function read(buffer: Buffer): string;
  */
 export declare function stringify(value: any): string;
 export declare function isDateWithinRange(date: number, range: number): boolean;
-export declare function generateKeys(name: string, email: string, passphrase: string): Promise<any>;
-export declare function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<any>;
+export declare function generateKeys(name: string, email: string, passphrase: string): Promise<openpgp.KeyPair>;
+export declare function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<openpgp.key.Key>;
 export declare function sign(value: string | object | any[], privateKeyObject: any): Promise<string>;
 export declare function sign(value: Uint8Array, privateKeyObject: any): Promise<Uint8Array>;
 export declare function isValidSignature(value: string | object | any[], signature: string, publicKey: string): Promise<boolean>;
@@ -40,6 +41,6 @@ export declare function isValidLeaveProof(data: any[], publicKey: string): Promi
 export declare function createFailureProof(peerId: string, profile: any): Promise<void>;
 export declare function isValidFailureProof(data: any[], publicKey: string): Promise<void>;
 export declare function encryptAssymetric(value: string, publicKey: string): Promise<string>;
-export declare function decryptAssymetric(value: string, privateKeyObject: object): Promise<string>;
+export declare function decryptAssymetric(value: string, privateKeyObject: openpgp.key.Key): Promise<string | Uint8Array>;
 export declare function encryptSymmetric(value: string, symkey: string): any;
 export declare function decryptSymmetric(encryptedValue: string, symkey: string): string;
