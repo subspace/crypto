@@ -10,8 +10,8 @@
   "license": "MIT",
   "test": "jest",
   "dependencies": {
-    "@subspace/jump-consistent-hash": "github:subspace/jump-consistent-hash",
-    "@subspace/rendezvous-hash": "github:subspace/rendezvous-hash",
+    "@subspace/jump-consistent-hash": "https://c9ed7a77df1c3e0e10413b1580924003c4ae75a3:x-oauth-basic@github.com/subspace/jump-consistent-hash.git",
+    "@subspace/rendezvous-hash": "https://c9ed7a77df1c3e0e10413b1580924003c4ae75a3:x-oauth-basic@github.com/subspace/rendezvous-hash.git",
     "@types/node": "^10.12.15",
     "@types/openpgp": "^4.0.1",
     "aes-js": "^3.1.1",
