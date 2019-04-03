@@ -34,7 +34,7 @@ export interface validityValue {
 }
 
 export interface encryptionOptions {
-  data: string,
+  message: string,
   publicKeys: string
 }
 

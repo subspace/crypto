@@ -327,7 +327,7 @@ export async function isValidFailureProof(data: any[], publicKey: string) {
 export async function encryptAssymetric(value: string, publicKey: string) {
   // encrypt a record symmetric key or record private key with a profile private key
   const options: interfaces.encryptionOptions = {
-    data: openpgp.message.fromText(value),
+    message: openpgp.message.fromText(value),
     publicKeys: (await openpgp.key.readArmored(publicKey)).keys
   }
 
@@ -339,7 +339,7 @@ export async function decryptAssymetric(value: string, privateKeyObject: object)
   // decrypt a symmetric key with a private key
 
   const options: interfaces.decryptionOptions = {
-    message: openpgp.message.readArmored(value),
+    message: await openpgp.message.readArmored(value),
     privateKeys: [privateKeyObject]
   }
 
