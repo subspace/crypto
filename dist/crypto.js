@@ -4,13 +4,14 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "crypto", "@subspace/jump-consistent-hash", "@subspace/rendezvous-hash"], factory);
+        define(["require", "exports", "crypto", "timing-safe-equal", "openpgp", "@subspace/jump-consistent-hash", "@subspace/rendezvous-hash"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const crypto = require("crypto");
-    const openpgp = require('openpgp');
+    const timingSafeEqual = require("timing-safe-equal");
+    const openpgp = require("openpgp");
     const aesjs = require('aes-js');
     const XXH = require('xxhashjs');
     var jump_consistent_hash_1 = require("@subspace/jump-consistent-hash");
@@ -26,9 +27,9 @@
         const testBuffer = Buffer.from(test);
         if (expectedBuffer.length !== testBuffer.length) {
             // If lengths are different - make fake comparison just to have constant time, since `crypto.timingSafeEqual` doesn't work with buffers of different length
-            return crypto.timingSafeEqual(Buffer.from('0'.repeat(expected.length)), Buffer.from('1'.repeat(expected.length)));
+            return timingSafeEqual(Buffer.from('0'.repeat(expected.length)), Buffer.from('1'.repeat(expected.length)));
         }
-        return crypto.timingSafeEqual(expectedBuffer, testBuffer);
+        return timingSafeEqual(expectedBuffer, testBuffer);
     }
     exports.constantTimeEqual = constantTimeEqual;
     function getHash(value) {
@@ -97,6 +98,7 @@
     async function sign(value, privateKeyObject) {
         if (value instanceof Uint8Array) {
             const options = {
+                // @ts-ignore Incorrect type information in the library, should be Uint8Array
                 message: openpgp.message.fromBinary(value),
                 privateKeys: [privateKeyObject],
                 detached: true
@@ -286,7 +288,7 @@
     async function encryptAssymetric(value, publicKey) {
         // encrypt a record symmetric key or record private key with a profile private key
         const options = {
-            data: openpgp.message.fromText(value),
+            message: openpgp.message.fromText(value),
             publicKeys: (await openpgp.key.readArmored(publicKey)).keys
         };
         const cipherText = await openpgp.encrypt(options);
@@ -296,7 +298,7 @@
     async function decryptAssymetric(value, privateKeyObject) {
         // decrypt a symmetric key with a private key
         const options = {
-            message: openpgp.message.readArmored(value),
+            message: await openpgp.message.readArmored(value),
             privateKeys: [privateKeyObject]
         };
         const plainText = await openpgp.decrypt(options);
