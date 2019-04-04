@@ -6,15 +6,15 @@ export interface validityValue {
     };
 }
 export interface encryptionOptions {
-    message: string;
-    publicKeys: string;
+    message: any;
+    publicKeys: any[];
 }
 export interface encryptedValueObject {
     data: string;
     signature: string;
 }
 export interface decryptionOptions {
-    message: string;
+    message: any;
     privateKeys: any[];
 }
 export interface decrpytedValueObject {
