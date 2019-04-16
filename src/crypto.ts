@@ -204,6 +204,27 @@ export function isValidProofOfTime(seed: string, time: number) {
   return time === createProofOfTime(seed)
 }
 
+export function createPoR(nodeId: string) {
+  // creates a mock Proof of Replication for a record from this node
+  // proof should actually be created when the record is stored by a host, then fetched on get (not created)
+  return this.getHash(JSON.stringify(this.getData()) + nodeId)
+}
+
+export function isValidPoR(nodeId: string, proof: string) {
+  // validates a Proof of Replicaiton from another node
+  return proof === this.createPoR(nodeId)
+}
+
+export function createPoD(nodeId: string) {
+  // creates a mock Proof of Deletion for a record from this node
+  return this.getHash(JSON.stringify(this.getData()) + nodeId)
+}
+
+export function isValidPoD(nodeId: string, proof: string) {
+  // validates a Proof of Deletion from another node
+  return proof === this.createPoD(nodeId)
+}
+
 export async function isValidMessageSignature(message: any) {
   let detachedMessage = JSON.parse(JSON.stringify(message))
   detachedMessage.signature = null

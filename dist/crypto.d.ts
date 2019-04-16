@@ -33,6 +33,10 @@ export declare function createProofOfSpace(seed: string, size: number): {
 export declare function isValidProofOfSpace(key: string, size: number, proofId: string): boolean;
 export declare function createProofOfTime(seed: string): number;
 export declare function isValidProofOfTime(seed: string, time: number): boolean;
+export declare function createPoR(nodeId: string): any;
+export declare function isValidPoR(nodeId: string, proof: string): boolean;
+export declare function createPoD(nodeId: string): any;
+export declare function isValidPoD(nodeId: string, proof: string): boolean;
 export declare function isValidMessageSignature(message: any): Promise<boolean>;
 export declare function createJoinProof(profile: any): Promise<any[]>;
 export declare function isValidJoinProof(data: any[]): Promise<interfaces.validityValue>;

@@ -180,6 +180,27 @@
         return time === createProofOfTime(seed);
     }
     exports.isValidProofOfTime = isValidProofOfTime;
+    function createPoR(nodeId) {
+        // creates a mock Proof of Replication for a record from this node
+        // proof should actually be created when the record is stored by a host, then fetched on get (not created)
+        return this.getHash(JSON.stringify(this.getData()) + nodeId);
+    }
+    exports.createPoR = createPoR;
+    function isValidPoR(nodeId, proof) {
+        // validates a Proof of Replicaiton from another node
+        return proof === this.createPoR(nodeId);
+    }
+    exports.isValidPoR = isValidPoR;
+    function createPoD(nodeId) {
+        // creates a mock Proof of Deletion for a record from this node
+        return this.getHash(JSON.stringify(this.getData()) + nodeId);
+    }
+    exports.createPoD = createPoD;
+    function isValidPoD(nodeId, proof) {
+        // validates a Proof of Deletion from another node
+        return proof === this.createPoD(nodeId);
+    }
+    exports.isValidPoD = isValidPoD;
     async function isValidMessageSignature(message) {
         let detachedMessage = JSON.parse(JSON.stringify(message));
         detachedMessage.signature = null;
