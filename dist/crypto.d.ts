@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import * as interfaces from './interfaces';
 import * as openpgp from 'openpgp';
 export { jumpConsistentHash } from '@subspace/jump-consistent-hash';
