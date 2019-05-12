@@ -88,7 +88,7 @@ export function isDateWithinRange(date: number, range: number): boolean {
   return Math.abs(Date.now() - date) <= range
 }
 
-export async function generateKeys(name: string, email: string, passphrase: string): Promise<openpgp.KeyPair> {
+export function generateKeys(name: string, email: string, passphrase: string): ReturnType<typeof openpgp.generateKey> {
 
   const options = {
     userIds: [{
@@ -99,7 +99,7 @@ export async function generateKeys(name: string, email: string, passphrase: stri
     passphrase: passphrase
   }
 
-  return await openpgp.generateKey(options)
+  return openpgp.generateKey(options)
 }
 
 export async function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<openpgp.key.Key> {
