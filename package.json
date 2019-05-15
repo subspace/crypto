@@ -6,6 +6,9 @@
     "openpgp": "openpgp/dist/openpgp.min.js"
   },
   "types": "dist/crypto.d.ts",
+  "files": [
+    "dist"
+  ],
   "author": "Jeremiah Wagstaff",
   "license": "MIT",
   "test": "jest",
