@@ -77,7 +77,7 @@
         return Math.abs(Date.now() - date) <= range;
     }
     exports.isDateWithinRange = isDateWithinRange;
-    async function generateKeys(name, email, passphrase) {
+    function generateKeys(name, email, passphrase) {
         const options = {
             userIds: [{
                     name: name,
@@ -86,7 +86,7 @@
             curve: 'ed25519',
             passphrase: passphrase
         };
-        return await openpgp.generateKey(options);
+        return openpgp.generateKey(options);
     }
     exports.generateKeys = generateKeys;
     async function getPrivateKeyObject(privateKey, passphrase) {

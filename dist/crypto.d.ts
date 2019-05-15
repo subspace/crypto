@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import * as interfaces from './interfaces';
 import * as openpgp from 'openpgp';
 export { jumpConsistentHash } from '@subspace/jump-consistent-hash';
@@ -16,7 +17,7 @@ export declare function read(buffer: Buffer): string;
  */
 export declare function stringify(value: any): string;
 export declare function isDateWithinRange(date: number, range: number): boolean;
-export declare function generateKeys(name: string, email: string, passphrase: string): Promise<openpgp.KeyPair>;
+export declare function generateKeys(name: string, email: string, passphrase: string): ReturnType<typeof openpgp.generateKey>;
 export declare function getPrivateKeyObject(privateKey: string, passphrase: string): Promise<openpgp.key.Key>;
 export declare function sign(value: string | object | any[], privateKeyObject: any): Promise<string>;
 export declare function sign(value: Uint8Array, privateKeyObject: any): Promise<Uint8Array>;
