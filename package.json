@@ -1,6 +1,6 @@
 {
   "name": "@subspace/crypto",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/crypto.js",
   "browser": {
     "openpgp": "openpgp/dist/openpgp.min.js"
