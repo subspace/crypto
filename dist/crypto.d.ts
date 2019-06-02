@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import * as interfaces from './interfaces';
 import * as openpgp from 'openpgp';
+import { MerkleTree } from "./MerkleTree";
 export { jumpConsistentHash } from '@subspace/jump-consistent-hash';
 export { Destination as rendezvousHashDestination, pickDestinations as rendezvousHashPickDestinations } from '@subspace/rendezvous-hash';
 export declare function constantTimeEqual(expected: string, test: string): boolean;
@@ -48,3 +49,5 @@ export declare function encryptAssymetric(value: string, publicKey: string): Pro
 export declare function decryptAssymetric(value: string, privateKeyObject: openpgp.key.Key): Promise<Uint8Array | string>;
 export declare function encryptSymmetric(value: string, symkey: string): any;
 export declare function decryptSymmetric(encryptedValue: string, symkey: string): string;
+export declare function buildMerkleTree(items: Uint8Array[]): MerkleTree;
+export declare function validateMerklePath(root: Uint8Array, item: Uint8Array, proof: Uint8Array): boolean;
