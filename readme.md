@@ -225,6 +225,12 @@ Takes a key and an array of potential destinations and returns `k` closest desti
 
 Returns an array of IDs of keys (first argument to `Destination` object below).
 
+### crypto.buildMerkleTree(items: Uint8Array[]): MerkleTree
+Creates Merkle Tree object, that can be used to get root or generate proof.
+
+### crypto.validateMerklePath(root: Uint8Array, item: Uint8Array, proof: Uint8Array): boolean
+Checks whether proof for specific root and item was generated correctly.
+
 Example:
 ```typescript
 import {randomBytes} from 'crypto';

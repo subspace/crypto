@@ -2,6 +2,7 @@ import * as crypto from 'crypto'
 import timingSafeEqual = require('timing-safe-equal')
 import * as interfaces from './interfaces'
 import * as openpgp from 'openpgp'
+import {MerkleTree} from "./MerkleTree";
 const aesjs = require('aes-js')
 const XXH = require('xxhashjs')
 
@@ -387,4 +388,12 @@ export function decryptSymmetric(encryptedValue: string, symkey: string) {
   const decryptedBytes: Uint8Array[] = aesCtr.decrypt(encryptedBytes)
   const decryptedText: string = aesjs.utils.utf8.fromBytes(decryptedBytes)
   return decryptedText
+}
+
+export function buildMerkleTree(items: Uint8Array[]): MerkleTree {
+  return new MerkleTree(items, getHash);
+}
+
+export function validateMerklePath(root: Uint8Array, item: Uint8Array, proof: Uint8Array): boolean {
+  return MerkleTree.checkProof(root, item, proof, getHash);
 }
