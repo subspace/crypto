@@ -4,7 +4,7 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "crypto", "timing-safe-equal", "openpgp", "@subspace/jump-consistent-hash", "@subspace/rendezvous-hash"], factory);
+        define(["require", "exports", "crypto", "timing-safe-equal", "openpgp", "./MerkleTree", "@subspace/jump-consistent-hash", "@subspace/rendezvous-hash"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -12,6 +12,7 @@
     const crypto = require("crypto");
     const timingSafeEqual = require("timing-safe-equal");
     const openpgp = require("openpgp");
+    const MerkleTree_1 = require("./MerkleTree");
     const aesjs = require('aes-js');
     const XXH = require('xxhashjs');
     var jump_consistent_hash_1 = require("@subspace/jump-consistent-hash");
@@ -345,5 +346,13 @@
         return decryptedText;
     }
     exports.decryptSymmetric = decryptSymmetric;
+    function buildMerkleTree(items) {
+        return new MerkleTree_1.MerkleTree(items, getHash);
+    }
+    exports.buildMerkleTree = buildMerkleTree;
+    function validateMerklePath(root, item, proof) {
+        return MerkleTree_1.MerkleTree.checkProof(root, item, proof, getHash);
+    }
+    exports.validateMerklePath = validateMerklePath;
 });
 //# sourceMappingURL=crypto.js.map
