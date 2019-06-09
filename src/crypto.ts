@@ -109,8 +109,8 @@ export async function getPrivateKeyObject(privateKey: string, passphrase: string
   return privateKeyObject
 }
 
-export async function sign(value: string | object | any[], privateKeyObject: any): Promise<string>;
 export async function sign(value: Uint8Array, privateKeyObject: any): Promise<Uint8Array>;
+export async function sign(value: string | object | any[], privateKeyObject: any): Promise<string>;
 export async function sign(value: string | Uint8Array | object | any[], privateKeyObject: openpgp.key.Key): Promise<string | Uint8Array> {
   if (value instanceof Uint8Array) {
     const options = {
@@ -136,8 +136,8 @@ export async function sign(value: string | Uint8Array | object | any[], privateK
   }
 }
 
-export async function isValidSignature(value: string | object | any[], signature: string, publicKey: string): Promise<boolean>;
 export async function isValidSignature(value: Uint8Array, signature: Uint8Array, publicKey: Uint8Array): Promise<boolean>;
+export async function isValidSignature(value: string | object | any[], signature: string, publicKey: string): Promise<boolean>;
 export async function isValidSignature(value: string | Uint8Array | object | any[], signature: string | Uint8Array, publicKey: string | Uint8Array): Promise<boolean> {
   // verifies a detached signature on a message given a public key for
     // RPC message signatures
